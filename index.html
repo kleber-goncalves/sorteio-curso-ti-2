@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <!-- Preview para do link -->
+        <meta property="og:image" content="https://sorteio-curso-ti.vercel.app/preview-mb.png">
+    
+        <!-- Preview para o Twitter/X ler a imagem corretamente -->
+        <meta name="twitter:image" content="https://sorteio-curso-ti.vercel.app/preview-mb.png">
+
+        <!-- Título e texto -->
+        <meta property="og:title" content="Sorteio do Mario">
+        <meta property="og:description" content="Participe no sorteio do curso de TI!">
+
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/png" href="as.png" >
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="responsivo.css" />
+        <title>Sorteio do Mario</title>
+    </head>
+    <body>
+        <main class="container">
+            <aside class="decoracoes" aria-hidden="true">
+                <div class="nuvem nuvem--superior-esquerda"></div>
+                <div class="nuvem nuvem--superior-direita"></div>
+                <div class="nuvem nuvem--inferior-esquerda"></div>
+                <div class="decoracao decoracao--moeda"></div>
+                <div class="decoracao decoracao--cogumelo"></div>
+                <div class="decoracao decoracao--estrela"></div>
+            </aside>
+
+            <button
+                class="botao-criador"
+                id="abrirCriador"
+                type="button"
+                aria-haspopup="dialog"
+                aria-controls="overlayCriador"
+                aria-expanded="false"
+            >
+                <span class="botao-criador__icone" aria-hidden="true">👑</span>
+                <span class="botao-criador__texto">CRIADOR</span>
+            </button>
+
+            <header class="cabecalho nao-selecionavel">
+                <h1 class="titulo">Sorteie um número.</h1>
+                <p class="subtitulo">Defina o intervalo e descubra o resultado.</p>
+            </header>
+
+            <section
+                class="centro-meio nao-selecionavel"
+                aria-label="centro-meio de sorteio"
+            >
+                <div class="aura-mario">
+                    <img
+                        class="imagem-mario"
+                        src="./img/1.png"
+                        alt="Mario com uma roleta de sorteio"
+                        width="320"
+                        height="320"
+                    />
+                </div>
+
+                <section
+                    class="cartao-resultado"
+                    aria-label="Resultado do sorteio"
+                >
+                    <div class="cartao-resultado__rotulo">RESULTADO</div>
+                    <div
+                        class="cartao-resultado__valor"
+                        id="resultado"
+                        aria-live="polite"
+                    >
+                        ?
+                    </div>
+                </section>
+
+                <section
+                    class="caixa-controles"
+                    aria-label="Controles do sorteio"
+                >
+                    <div
+                        class="intervalo"
+                        role="group"
+                        aria-label="Intervalo do sorteio"
+                    >
+                        <label class="campo">
+                            <span class="campo__rotulo">MÍN</span>
+                            <input
+                                class="campo__entrada"
+                                id="minimo"
+                                type="number"
+                                inputmode="numeric"
+                                step="1"
+                                value="1"
+                            />
+                        </label>
+                        <label class="campo">
+                            <span class="campo__rotulo">MÁX</span>
+                            <input
+                                class="campo__entrada"
+                                id="maximo"
+                                type="number"
+                                inputmode="numeric"
+                                step="1"
+                                value="100"
+                            />
+                        </label>
+                    </div>
+
+                    <div class="acoes" aria-label="Ações">
+                        <button
+                            class="botao botao--comecar"
+                            id="comecar"
+                            type="button"
+                        >
+                            <span class="botao__icone" aria-hidden="true">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="18"
+                                    height="18"
+                                    focusable="false"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M8 5v14l12-7-12-7Z"
+                                        fill="currentColor"
+                                    ></path>
+                                </svg>
+                            </span>
+                            <span class="botao__texto">COMEÇAR</span>
+                        </button>
+
+                        <section
+                            class="modo-sorteio"
+                            aria-label="Modo de sorteio"
+                        >
+                            <div class="modo-sorteio__titulo">
+                                MODO DE SORTEIO
+                            </div>
+                            <div class="seletor-modo-switch">
+                                <input
+                                    class="seletor-modo-switch__input"
+                                    id="modoToggle"
+                                    type="checkbox"
+                                    value="automatico"
+                                    aria-label="Alternar entre modo automático e manual"
+                                />
+                                <label
+                                    class="seletor-modo-switch__label"
+                                    for="modoToggle"
+                                >
+                                    <span
+                                        class="seletor-modo-switch__fundo"
+                                    ></span>
+                                    <span
+                                        class="seletor-modo-switch__bolinha"
+                                    ></span>
+                                    <span
+                                        class="seletor-modo-switch__texto seletor-modo-switch__texto--esquerda"
+                                        >AUTOMÁTICO</span
+                                    >
+                                    <span
+                                        class="seletor-modo-switch__texto seletor-modo-switch__texto--direita"
+                                        >MANUAL</span
+                                    >
+                                </label>
+                            </div>
+                            <p class="modo-sorteio__ajuda" id="ajudaModo">
+                                Você controla quando parar — clique em Parar
+                                para o clímax.
+                            </p>
+                        </section>
+
+                        <button
+                            class="botao botao--parar"
+                            id="parar"
+                            type="button"
+                            disabled
+                        >
+                            <span class="botao__icone" aria-hidden="true">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="18"
+                                    height="18"
+                                    focusable="false"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M7 7h10v10H7z"
+                                        fill="currentColor"
+                                    ></path>
+                                </svg>
+                            </span>
+                            <span class="botao__texto">PARAR</span>
+                        </button>
+
+                        <button
+                            class="botao botao--resetar"
+                            id="resetar"
+                            type="button"
+                        >
+                            <span class="botao__icone" aria-hidden="true">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="18"
+                                    height="18"
+                                    focusable="false"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M12 6a6 6 0 1 1-5.35 3.3"
+                                        stroke="currentColor"
+                                        stroke-width="2.4"
+                                        fill="none"
+                                        stroke-linecap="round"
+                                    ></path>
+                                    <path
+                                        d="M5 6v5h5"
+                                        stroke="currentColor"
+                                        stroke-width="2.4"
+                                        fill="none"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    ></path>
+                                </svg>
+                            </span>
+                            <span class="botao__texto">RESETAR</span>
+                        </button>
+                    </div>
+                </section>
+
+                <p class="dica" id="dica" aria-live="polite"></p>
+            </section>
+        </main>
+
+        <div class="modal-overlay nao-selecionavel" id="overlayCriador" hidden>
+            <div
+                class="modal-criador"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modalCriadorTitulo"
+            >
+                <div class="modal-criador__cabecalho">
+                    <div>
+                        <div class="modal-criador__rotulo">CRIADOR</div>
+                    </div>
+                    <button
+                        class="modal-criador__fechar"
+                        id="fecharCriador"
+                        type="button"
+                        aria-label="Fechar"
+                    >
+                        ✕
+                    </button>
+                </div>
+                <div class="modal-criador__conteudo">
+                    <a
+                        href="https://github.com/kleber-goncalves"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="modal-criador__item modal-criador__item--github"
+                    >
+                        <span class="modal-criador__item-icone">
+                            <img
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAD20lEQVR4nO2ZW4hOURTHP+N+yd2DW7x48+Q2HjyKRB4mhMILkiRejEsk1wcvxpASEZEyIpc8oCGiFCEvhmmMcRnXyGXGSD8ts09Wp/3ts/f5jkF9/zo13zlrr8u+rf9ak8sVUUQRBQMoAcYDa4GTwAPgPdBinvfmXRWwBiiVMbm/DWAIsB14RjgagG3A4L/heD9gL/CNwtEM7AH6tpXzs4G3FkdeAPuBecAoE2RH8/QHRgPzgQPAS8v4N8CsP+l4BzPrcVQDU4H2gbqmAVcs+nbL96yd7wqcjRmqASZloHsK8Cim+4zYzMr5DhbnDwHdMzGQ+2WjB3DYEkThK2HZNusz8dpua0PMVmUWB7ZNnHcEMSOXBuYW0bfNIYvMIuA2UCE5IUD3UGAXcAeYa/l+RNl9DfQpdOvU2PY8cFPJfAAmeuidBHxU4y7nOROPU28lk2F1kpqcR+5JbLk/A5uA88BT4It56oFzwEbzW6POcTvpZDcoJAChBxGqHXIPKRx1Dv1XldxWX+fbx7jNVIds/OpLg0sO/ZLsItR7EUDDKjU9yHsXAwszCGB7Qg5qVLLjfAJYpwbsT8jO8QyaBrVAF4edg0q23CcA4fMR5jnkVpIdVjjsLFByJ3wCkMIjwiiHnJC4rHDRYWeMkrvvE8A7NaCfQ07ob1Z47bAzQMm98QlA3/+dHHKSIbNCg8NOZyXXHBpAN4ecjcunRbXDTvfQAPQWGuaQW55hAEsddoaHbiF9iMckzIzmK2nxSLiPw8640EOsr9HFCbITgK8FOP9VEmeCjSWh16j0diIc9ZAvTXmghapP8NB/XI1ZlfN0KMJLn7JOmCKwD/ju4XiLoeoDPfRKR+OVz5aOd9mk6RRhZuKg32OHAcuAuxbHpXhZKsVMyoqw3rubZzpmEa5Zbp8LwIg8Y+dYOL/gU8hkCIAbavyWnC+k3WeKiAjT1bd2hmA9jwdh0r5rGzW76IkGUKbGNQUVNEaBtPsiyJbqGUvvTeb9SPX+NMmo8rDdy0xQhIog51VRr/nOMZl9S+H9w5SPtZ6HuNHjDB5X8q9SFfVG2ax8xYfMvFmFYCTY3BETL0vlvFIovUqNzdFKmER2y3PmnQHQOvP68hDsLMh5VdZJm0+jypb+0wZAaxvlVEzsdEjDOCmIrpYgnsavxTQB0LpNGyzOZ9Pcja1EpcWfaybhaN6ehM5mzHXLt4rMZj5PIDNi6T1CCB+yVXONBR/YgCD6mNXQyS4tmsys924T5y0kbqs5D6EQbrPFh9S1RSAlpvBYLZxdCg9T2X0zj/x9z3wrB8b+E/9mLaKI3P+Pn8k9es1NbXh5AAAAAElFTkSuQmCC"
+                                alt="ERRO - Icone do GitHub não encontrada"
+                            />
+                        </span>
+                        <span class="modal-criador__item-texto">
+                            GITHUB
+                            <strong>kleber Lucas.G.S</strong>
+                        </span>
+                    </a>
+
+                    <a
+                        href="https://github.com/kleber-goncalves/sorteio-curso-ti/tree/dev"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="modal-criador__item modal-criador__item--github"
+                    >
+                        <span class="modal-criador__item-icone">
+                            <img
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAD20lEQVR4nO2ZW4hOURTHP+N+yd2DW7x48+Q2HjyKRB4mhMILkiRejEsk1wcvxpASEZEyIpc8oCGiFCEvhmmMcRnXyGXGSD8ts09Wp/3ts/f5jkF9/zo13zlrr8u+rf9ak8sVUUQRBQMoAcYDa4GTwAPgPdBinvfmXRWwBiiVMbm/DWAIsB14RjgagG3A4L/heD9gL/CNwtEM7AH6tpXzs4G3FkdeAPuBecAoE2RH8/QHRgPzgQPAS8v4N8CsP+l4BzPrcVQDU4H2gbqmAVcs+nbL96yd7wqcjRmqASZloHsK8Cim+4zYzMr5DhbnDwHdMzGQ+2WjB3DYEkThK2HZNusz8dpua0PMVmUWB7ZNnHcEMSOXBuYW0bfNIYvMIuA2UCE5IUD3UGAXcAeYa/l+RNl9DfQpdOvU2PY8cFPJfAAmeuidBHxU4y7nOROPU28lk2F1kpqcR+5JbLk/A5uA88BT4It56oFzwEbzW6POcTvpZDcoJAChBxGqHXIPKRx1Dv1XldxWX+fbx7jNVIds/OpLg0sO/ZLsItR7EUDDKjU9yHsXAwszCGB7Qg5qVLLjfAJYpwbsT8jO8QyaBrVAF4edg0q23CcA4fMR5jnkVpIdVjjsLFByJ3wCkMIjwiiHnJC4rHDRYWeMkrvvE8A7NaCfQ07ob1Z47bAzQMm98QlA3/+dHHKSIbNCg8NOZyXXHBpAN4ecjcunRbXDTvfQAPQWGuaQW55hAEsddoaHbiF9iMckzIzmK2nxSLiPw8640EOsr9HFCbITgK8FOP9VEmeCjSWh16j0diIc9ZAvTXmghapP8NB/XI1ZlfN0KMJLn7JOmCKwD/ju4XiLoeoDPfRKR+OVz5aOd9mk6RRhZuKg32OHAcuAuxbHpXhZKsVMyoqw3rubZzpmEa5Zbp8LwIg8Y+dYOL/gU8hkCIAbavyWnC+k3WeKiAjT1bd2hmA9jwdh0r5rGzW76IkGUKbGNQUVNEaBtPsiyJbqGUvvTeb9SPX+NMmo8rDdy0xQhIog51VRr/nOMZl9S+H9w5SPtZ6HuNHjDB5X8q9SFfVG2ax8xYfMvFmFYCTY3BETL0vlvFIovUqNzdFKmER2y3PmnQHQOvP68hDsLMh5VdZJm0+jypb+0wZAaxvlVEzsdEjDOCmIrpYgnsavxTQB0LpNGyzOZ9Pcja1EpcWfaybhaN6ehM5mzHXLt4rMZj5PIDNi6T1CCB+yVXONBR/YgCD6mNXQyS4tmsys924T5y0kbqs5D6EQbrPFh9S1RSAlpvBYLZxdCg9T2X0zj/x9z3wrB8b+E/9mLaKI3P+Pn8k9es1NbXh5AAAAAElFTkSuQmCC"
+                                alt="ERRO - Icone do GitHub não encontrada"
+                            />
+                        </span>
+                        <span class="modal-criador__item-texto">
+                            REPOSITORIO DO PROJETO
+                            <strong>sorteio-curso-ti</strong>
+                        </span>
+                    </a>
+
+                    <a
+                        href="https://www.linkedin.com/in/kleber-goncalve-s/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="modal-criador__item modal-criador__item--linkedin"
+                    >
+                        <span class="modal-criador__item-icone">
+                            <img
+                                src="./img/linkedin-48.png"
+                                width="34"
+                                height="34"
+                                alt="ERRO - Icone do LinkedIn não encontrada"
+                            />
+                        </span>
+
+                        <span class="modal-criador__item-texto">
+                            LINKEDIN
+                            <strong>Kleber Gonçalves</strong>
+                        </span>
+                    </a>
+
+                    <a
+                        href="https://www.instagram.com/kleber_goncalves.s"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="modal-criador__item modal-criador__item--instagram"
+                    >
+                        <span class="modal-criador__item-icone">
+                            <img
+                                src="./img/instagram-48.png"
+                                width="44"
+                                height="44"
+                                alt="ERRO - Icone do Instagram não encontrada"
+                            />
+                        </span>
+                        <span class="modal-criador__item-texto">
+                            INSTAGRAM
+                            <strong>kleber_goncalves.s</strong>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
