@@ -3,7 +3,8 @@
     const resultado = document.getElementById("resultado");
     const inputMinimo = document.getElementById("minimo");
     const inputMaximo = document.getElementById("maximo");
-    const inputModoToggle = document.getElementById("modoToggle");
+    const inputModoAutomatico = document.getElementById("automatico");
+    const inputModoManual = document.getElementById("manual");
     const ajudaModo = document.getElementById("ajudaModo");
     const botaoComecar = document.getElementById("comecar");
     const botaoParar = document.getElementById("parar");
@@ -13,6 +14,7 @@
     const botaoFecharCriador = document.getElementById("fecharCriador");
     const dica = document.getElementById("dica");
     const cartaoResultado = document.querySelector(".cartao-resultado");
+    const historico = document.querySelector("#historico");
 
     const mediaMovimentoReduzido = window.matchMedia?.(
         "(prefers-reduced-motion: reduce)",
@@ -23,23 +25,56 @@
     let estaRodando = false;
     let modoSorteio = "manual";
 
+    let listaHistorico = [];
+    // Limita o tamanho do histórico ex: 10 numeros
+    const LIMITE_HISTORICO = 10;
+
+    function atualizarHistorico() {
+        if (!historico) return;
+
+        // Pega os 10 primeiros
+        const ultimos = listaHistorico.slice(0, LIMITE_HISTORICO);
+
+        historico.innerHTML = ultimos
+            .map((n, index) => {
+                // VERIFICAÇÃO AQUI: Se o index for 0 (o primeiro da esquerda), adicione a classe "ultimo-sorteado".
+                const classeNumSorteado = index === 0 ? "ultimo-sorteado" : "";
+                return `<span class="item-historico ${classeNumSorteado}">${n}</span>`;
+            })
+            .join("");
+    }
+
     function definirModoSorteio(novoModo) {
         modoSorteio = novoModo === "automatico" ? "automatico" : "manual";
-
-        if (ajudaModo) {
-            ajudaModo.textContent =
-                modoSorteio === "automatico"
-                    ? "O sistema gira e para sozinho com desaceleração suave."
-                    : "Você controla quando parar. clique em Parar para mostrar o número sorteado.";
-        }
 
         if (estaRodando) {
             limparGiro();
             definirRodando(false);
-        } else {
+        } else if (botaoParar) {
             // O botao Parar fique "desligado" ao trocar para manual.
             botaoParar.disabled = true;
         }
+
+        if (inputModoAutomatico) {
+            inputModoAutomatico.checked = modoSorteio === "automatico";
+        }
+        if (inputModoManual) {
+            inputModoManual.checked = modoSorteio !== "automatico";
+        }
+
+        // Atualizar texto do botão baseado no modo
+        if (botaoComecar) {
+            if (modoSorteio === "manual") {
+                botaoComecar.innerHTML = estaRodando
+                    ? `<img src="./img/erro.png" alt="" width="29" height="29"> <span class="span-sortear">Erro do texto do button do modo manual</span>`
+                    : `<img src="./img/brilho-2.png" alt="" width="19" height="19"> <span class="span-sortear">Iniciar roleta</span>`;
+            } else {
+                botaoComecar.innerHTML = estaRodando
+                        ? `<img src="./img/error.png" alt="" width="29" height="29"> <span class="span-sortear">Erro do texto do button do modo automatico</span>`
+                        : `<img src="./img/brilho-2.png" alt="" width="19" height="19"> <span class="span-sortear">Sortear numero</span>`;
+            }
+        }
+
     }
 
     // não esta sendo usado
@@ -104,8 +139,34 @@
     function definirRodando(proximoRodando) {
         estaRodando = proximoRodando;
         conteiner.classList.toggle("esta-rodando", estaRodando);
-        botaoComecar.disabled = estaRodando;
-        botaoParar.disabled = !estaRodando || modoSorteio === "automatico";
+
+        if (botaoComecar) {
+            botaoComecar.disabled = estaRodando && modoSorteio === "automatico";
+
+            if (modoSorteio === "manual") {
+                if (estaRodando) {
+                    botaoComecar.innerHTML = "Parar";
+                    botaoComecar.classList.remove("button-bg-base");
+                    botaoComecar.classList.add("button-bg-manual__parar");
+                }
+                else {
+                    botaoComecar.innerHTML = `<img src="./img/brilho-2.png" alt="" width="19" height="19"> <span class="span-sortear">Iniciar roleta novamente</span>`;
+                    botaoComecar.classList.remove("button-bg-manual__parar");
+                    botaoComecar.classList.add("button-bg-base");
+                }
+            } else {
+                // MODO AUTOMÁTICO
+                // Garantimos que o botão volte à cor base caso tenha vindo do  manual
+                botaoComecar.classList.remove("button-bg-manual__parar");
+                botaoComecar.classList.add("button-bg-base");
+
+                botaoComecar.innerHTML = estaRodando
+                    ? "Sorteando..."
+                    : `<img src="./img/brilho-2.png" alt="" width="19" height="19">     <span class="span-sortear">Sortear novamente</span>`;
+            }
+        }
+        if (botaoParar)
+            botaoParar.disabled = !estaRodando || modoSorteio === "automatico";
     }
 
     // resetar o giro
@@ -237,45 +298,42 @@
         else comecarManual();
     }
 
-    function parar(automatico = false) {
+    function parar() {
         if (!estaRodando) return;
 
         const intervalo = lerIntervalo();
-        if (!intervalo.ok) {
-            limparGiro();
-            definirRodando(false);
-            definirDica(intervalo.mensagem, "erro");
-            return;
-        }
+        if (!intervalo.ok) return;
 
         limparGiro();
-        let numeroFinal = inteiroAleatorioInclusivo(
+
+        const numeroFinal = inteiroAleatorioInclusivo(
             intervalo.minimo,
             intervalo.maximo,
         );
-        if (automatico) {
-            const candidato = Number.parseInt(resultado.textContent, 10);
-            if (
-                Number.isFinite(candidato) &&
-                candidato >= intervalo.minimo &&
-                candidato <= intervalo.maximo
-            ) {
-                numeroFinal = candidato;
-            }
-        }
-        resultado.textContent = String(numeroFinal);
+
+        resultado.textContent = numeroFinal;
+
+        // 🔥 SALVAR NO HISTÓRICO
+        listaHistorico.unshift(numeroFinal);
+        atualizarHistorico();
+
+       
+
         definirRodando(false);
         destacarCartao();
-        if (!automatico) definirDica(`Resultado: ${numeroFinal}`);
     }
 
     function resetar() {
         limparGiro();
         definirRodando(false);
+
         inputMinimo.value = "1";
         inputMaximo.value = "100";
         resultado.textContent = "?";
-        definirDica("");
+
+        // 🧠 LIMPAR HISTÓRICO
+        listaHistorico = [];
+        atualizarHistorico();
     }
 
     function abrirModalCriador() {
@@ -290,9 +348,21 @@
         botaoAbrirCriador.setAttribute("aria-expanded", "false");
     }
 
-    botaoComecar.addEventListener("click", comecar);
-    botaoParar.addEventListener("click", parar);
-    botaoResetar.addEventListener("click", resetar);
+    if (botaoComecar) {
+        botaoComecar.addEventListener("click", () => {
+            if (modoSorteio === "manual" && estaRodando) {
+                parar();
+            } else {
+                comecar();
+            }
+        });
+    }
+    if (botaoParar) {
+        botaoParar.addEventListener("click", parar);
+    }
+    if (botaoResetar) {
+        botaoResetar.addEventListener("click", resetar);
+    }
 
     if (botaoAbrirCriador) {
         botaoAbrirCriador.addEventListener("click", abrirModalCriador);
@@ -308,15 +378,19 @@
         });
     }
 
-    if (inputModoToggle) {
-        inputModoToggle.addEventListener("change", () => {
-            definirModoSorteio(
-                inputModoToggle.checked ? "automatico" : "manual",
-            );
+    if (inputModoAutomatico) {
+        inputModoAutomatico.addEventListener("change", () => {
+            if (inputModoAutomatico.checked) definirModoSorteio("automatico");
         });
     }
 
-    // vai começar como (padrao: manual, toggle desligado)
+    if (inputModoManual) {
+        inputModoManual.addEventListener("change", () => {
+            if (inputModoManual.checked) definirModoSorteio("manual");
+        });
+    }
+
+    // vai começar como (padrao: manual)
     definirModoSorteio("manual");
 
     function validarEntradas() {

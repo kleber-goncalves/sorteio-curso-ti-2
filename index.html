@@ -3,33 +3,98 @@
     <head>
         <meta charset="UTF-8" />
         <!-- Preview para do link -->
-        <meta property="og:image" content="https://sorteio-curso-ti.vercel.app/preview-mb.png">
-    
+        <meta
+            property="og:image"
+            content="https://sorteio-curso-ti.vercel.app/preview-mb.png"
+        />
+
         <!-- Preview para o Twitter/X ler a imagem corretamente -->
-        <meta name="twitter:image" content="https://sorteio-curso-ti.vercel.app/preview-mb.png">
+        <meta
+            name="twitter:image"
+            content="https://sorteio-curso-ti.vercel.app/preview-mb.png"
+        />
 
         <!-- Título e texto -->
-        <meta property="og:title" content="Sorteio do Mario">
-        <meta property="og:description" content="Participe no sorteio do curso de TI!">
-
+        <meta property="og:title" content="Sorteio do Mario" />
+        <meta
+            property="og:description"
+            content="Participe no sorteio do curso de TI!"
+        />
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/png" href="as.png" >
+        <link rel="icon" type="image/png" href="as.png" />
         <link rel="stylesheet" href="style.css" />
         <link rel="stylesheet" href="responsivo.css" />
         <title>Sorteio do Mario</title>
     </head>
     <body>
-        <main class="container">
-            <aside class="decoracoes" aria-hidden="true">
-                <div class="nuvem nuvem--superior-esquerda"></div>
-                <div class="nuvem nuvem--superior-direita"></div>
-                <div class="nuvem nuvem--inferior-esquerda"></div>
-                <div class="decoracao decoracao--moeda"></div>
-                <div class="decoracao decoracao--cogumelo"></div>
-                <div class="decoracao decoracao--estrela"></div>
-            </aside>
+        <header class="cabecalho">
+            <nav class="nav">
+                <div class="logo">
+                    <img src="" alt="" />
+                    <p>Sorteador</p>
+                </div>
+                <div>
+                    <p>criador</p>
+                </div>
+            </nav >
+            <div >
+                <h1 class="txt">Sorteie um <span>número</span>.</h1>
+                <p>Defina o intervalo e descubra o resultado.</p>
+            </div>
+        </header>
 
+
+        <main class="container">
+            <section class="centro-meio">
+                <div class="modo">
+                    <p>MODO</p>
+                    <div class="modo__options">
+                        <label for="automatico">
+                            <input type="radio" name="modo" id="automatico" checked />
+                            <span>Automático</span>
+                        </label>
+                        <label for="manual">
+                            <input type="radio" name="modo" id="manual" />
+                            <span>Manual</span>
+                        </label>
+                    </div>
+                    <p class="modo__ajuda" id="ajudaModo"></p>
+                </div>
+
+                <div class="intervalo">
+                    <div>
+                        <label for="minimo">Mínimo</label>
+                        <input type="number" name="minimo" id="minimo" />
+                    </div>
+                    <div>
+                        <label for="maximo">Máximo</label>
+                        <input type="number" name="maximo" id="maximo" />
+                    </div>
+                </div>
+
+                <div class="resultado">
+                        <p>NUMERO SORTEADO</p>
+                        <span id="resultado">?</span>
+                </div>
+
+                <div class="botao">
+                    <button class="button-bg-base" id="comecar" type="button"></button>
+                </div>
+                <p class="dica" id="dica"></p>
+                <div class="HISTORICO">
+                    <p>HISTÓRICO</p>
+                    <div id="historico" class="historico">
+                      
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <script src="script.js" defer></script>
+
+        <!--
+        <main class="container">
             <button
                 class="botao-criador"
                 id="abrirCriador"
@@ -51,87 +116,14 @@
                 class="centro-meio nao-selecionavel"
                 aria-label="centro-meio de sorteio"
             >
-                <div class="aura-mario">
-                    <img
-                        class="imagem-mario"
-                        src="./img/1.png"
-                        alt="Mario com uma roleta de sorteio"
-                        width="320"
-                        height="320"
-                    />
-                </div>
 
-                <section
-                    class="cartao-resultado"
-                    aria-label="Resultado do sorteio"
-                >
-                    <div class="cartao-resultado__rotulo">RESULTADO</div>
-                    <div
-                        class="cartao-resultado__valor"
-                        id="resultado"
-                        aria-live="polite"
-                    >
-                        ?
-                    </div>
-                </section>
 
                 <section
                     class="caixa-controles"
                     aria-label="Controles do sorteio"
                 >
-                    <div
-                        class="intervalo"
-                        role="group"
-                        aria-label="Intervalo do sorteio"
-                    >
-                        <label class="campo">
-                            <span class="campo__rotulo">MÍN</span>
-                            <input
-                                class="campo__entrada"
-                                id="minimo"
-                                type="number"
-                                inputmode="numeric"
-                                step="1"
-                                value="1"
-                            />
-                        </label>
-                        <label class="campo">
-                            <span class="campo__rotulo">MÁX</span>
-                            <input
-                                class="campo__entrada"
-                                id="maximo"
-                                type="number"
-                                inputmode="numeric"
-                                step="1"
-                                value="100"
-                            />
-                        </label>
-                    </div>
 
-                    <div class="acoes" aria-label="Ações">
-                        <button
-                            class="botao botao--comecar"
-                            id="comecar"
-                            type="button"
-                        >
-                            <span class="botao__icone" aria-hidden="true">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    width="18"
-                                    height="18"
-                                    focusable="false"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        d="M8 5v14l12-7-12-7Z"
-                                        fill="currentColor"
-                                    ></path>
-                                </svg>
-                            </span>
-                            <span class="botao__texto">COMEÇAR</span>
-                        </button>
-
-                        <section
+                                        <section
                             class="modo-sorteio"
                             aria-label="Modo de sorteio"
                         >
@@ -171,6 +163,74 @@
                                 para o clímax.
                             </p>
                         </section>
+
+                    <div
+                        class="intervalo"
+                        role="group"
+                        aria-label="Intervalo do sorteio"
+                    >
+                        <label class="campo">
+                            <span class="campo__rotulo">MÍN</span>
+                            <input
+                                class="campo__entrada"
+                                id="minimo"
+                                type="number"
+                                inputmode="numeric"
+                                step="1"
+                                value="1"
+                            />
+                        </label>
+                        <label class="campo">
+                            <span class="campo__rotulo">MÁX</span>
+                            <input
+                                class="campo__entrada"
+                                id="maximo"
+                                type="number"
+                                inputmode="numeric"
+                                step="1"
+                                value="100"
+                            />
+                        </label>
+                    </div>
+
+                                    <section
+                    class="cartao-resultado"
+                    aria-label="Resultado do sorteio"
+                >
+                    <div class="cartao-resultado__rotulo">RESULTADO</div>
+                    <div
+                        class="cartao-resultado__valor"
+                        id="resultado"
+                        aria-live="polite"
+                    >
+                        ?
+                    </div>
+                </section>
+
+                    <div class="acoes" aria-label="Ações">
+                        <button
+                            class="botao botao--comecar"
+                            id="comecar"
+                            type="button"
+                        >
+                            <span class="botao__icone" aria-hidden="true">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="18"
+                                    height="18"
+                                    focusable="false"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M8 5v14l12-7-12-7Z"
+                                        fill="currentColor"
+                                    ></path>
+                                </svg>
+                            </span>
+                            <span class="botao__texto">COMEÇAR</span>
+                        </button>
+
+
 
                         <button
                             class="botao botao--parar"
@@ -335,6 +395,7 @@
             </div>
         </div>
 
-        <script src="script.js"></script>
+         -->
+        <script src="script.js"></script> 
     </body>
 </html>
