@@ -210,7 +210,7 @@ header::before {
     border-radius: 18px;
     background-color: #121417;
     margin: auto;
-    max-width: 100%;
+    width: 36%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -227,7 +227,7 @@ header::before {
     justify-content: center;
     align-items: center;
     gap: 20px;
-    padding: 50px;
+    padding: 30px;
     background: none;
 }
 
@@ -242,69 +242,62 @@ header::before {
 
 .modo p {
     margin: 0;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    font-size: 10px;
+    font-weight: 200;
+    letter-spacing: 0.30em;
     text-transform: uppercase;
+    font-family: var(--fonte-numero);
     color: rgba(255, 255, 255, 0.64);
 }
 
 .modo__options {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
+    flex-direction: row;
+    background: rgb(32, 32, 32);
+    border-radius: 50px;
+    border: 1px solid rgb(70, 69, 69);
+    padding: 4px;
+    width: 100%;
 }
 
 .modo__options label {
     position: relative;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 10px;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 16px;
-    font-weight: 600;
+    justify-content: center;
+    width: 50%;
+    padding: 8px 20px;
+    border-radius: 40px;
+    transition: all 0.3s ease;
+    color: #898e96;
+    font-family: var(--fonte-base);
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
-    user-select: none;
+    /** user-select: none; */
 }
 
-.modo__options input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    pointer-events: none;
+/* Esconde a "bolinha" do rádio */
+.modo__options input[type="radio"] {
+    display: none;
 }
 
-.modo__options label span {
-    position: relative;
-    padding-left: 24px;
+/* Quando o input dentro do label estiver marcado...*/
+/* o seletor label:has(input:checked) será aplicado */
+.modo__options label:has(input:checked) {
+    background-color: #cff754; /* Verde neon */
+    color: #000000; /* Texto preto */
 }
 
-.modo__options label span::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-    transition: all 180ms ease;
+/* Adicionando os ícones via CSS (opcional, já que não estão no seu HTML) */
+label[for="automatico"] span::before {
+    content: '⚡'; /* Ou use sua img */
+    margin-right: 8px;
 }
 
-.modo__options input:checked + span::before {
-    background: radial-gradient(circle, #70e0ff 0%, #2da5ff 100%);
-    border-color: #7aeeff;
-    box-shadow: 0 0 0 5px rgba(79, 224, 255, 0.16);
-}
-
-.modo__options input:checked + span {
-    color: #ffffff;
+label[for="manual"] span::before {
+    content: '🖐️'; /* Ou use sua img */
+    margin-right: 8px;
 }
 
 /* INTERVALO SECTION */
@@ -314,7 +307,7 @@ header::before {
     align-items: center;
     justify-content: center;
     gap: 28px;
-    padding: 26px 24px;
+    
     transition: all 180ms ease;
 }
 
