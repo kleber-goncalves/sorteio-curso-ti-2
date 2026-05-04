@@ -279,3 +279,85 @@
         font-size: 11px;
     }
 }
+
+/* Telefones muito pequenos (<= 379px) */
+@media (max-width: 379px) {
+    body {
+        padding: 0 8px 18px;
+    }
+
+    .cabecalho .txt {
+        font-size: clamp(24px, 9vw, 30px);
+    }
+
+    .nav .logo {
+        font-size: 13px;
+    }
+
+    .criador {
+        padding: 7px 10px;
+    }
+
+    .criador .criador-elements {
+        font-size: 0.8rem;
+    }
+
+    .centro-meio {
+        padding: 14px 10px;
+        gap: 14px;
+    }
+
+    .modo__options label {
+        font-size: 12px;
+        padding: 7px 8px;
+    }
+
+    .intervalo input[type="number"] {
+        font-size: 14px;
+    }
+
+    .resultado span {
+        font-size: clamp(52px, 20vw, 78px);
+    }
+
+    .botao button {
+        font-size: 14px;
+        padding: 12px 16px;
+    }
+
+    .historico {
+        gap: 6px;
+    }
+
+    .historico span {
+        width: 32px;
+        height: 26px;
+        font-size: 10px;
+    }
+
+    
+    #modal {
+        width: min(560px, 78vw);
+        padding: 16px;
+    }
+
+    .modal-cabecalho h2 {
+        font-size: 24px;
+    }
+
+    .modal-cabecalho p {
+        font-size: 12px;
+    }
+
+    .container-info__card {
+        padding: 10px;
+    }
+
+    .info p {
+        font-size: 13px;
+    }
+
+    .info span {
+        font-size: 11px;
+    }
+}
