@@ -1,438 +1,363 @@
-@media (max-width: 1024px) {
-    .botao-criador {
-        top: 12px;
-        left: 12px;
-        padding: 8px 14px;
+/* =============================
+   RESPONSIVIDADE POR DISPOSITIVO
+   ============================= */
+
+/* PC grande (>= 1600px) */
+@media (min-width: 1600px) {
+    .cabecalho {
+        max-width: 880px;
+        padding: 0 20px;
     }
 
-    .modal-criador {
-        width: min(100%, 420px);
+    .container {
+        width: min(640px, 92vw);
+    }
+
+    .centro-meio {
+        max-width: 640px;
+        padding: 34px;
+        gap: 24px;
+    }
+
+    #modal {
+        width: min(460px, 90vw);
+    }
+}
+
+/* Notebook grande (1280px - 1599px) */
+@media (min-width: 1280px) and (max-width: 1599px) {
+    .cabecalho {
+        max-width: 780px;
+        padding: 0 18px;
+    }
+
+    .container {
+        width: min(600px, 92vw);
+    }
+
+    .centro-meio {
+        max-width: 600px;
+        padding: 30px;
+    }
+
+    #modal {
+        width: min(430px, 90vw);
+    }
+}
+
+/* Notebook pequeno (900px - 1279px) */
+@media (min-width: 900px) and (max-width: 1279px) {
+    html,
+    body {
+        overflow-y: auto;
+    }
+
+    body {
+        justify-content: flex-start;
+        padding: 28px 16px;
     }
 
     .cabecalho {
-        padding-top: 8px;
+        max-width: 720px;
+        gap: 18px;
+        padding: 0 12px;
     }
 
-    .titulo {
-        font-size: clamp(42px, 6.2vh, 68px);
-    }
-
-    .subtitulo {
-        font-size: clamp(24px, 3.8vh, 40px);
+    .container {
+        width: min(620px, 96vw);
+        margin-top: 18px;
     }
 
     .centro-meio {
-        gap: clamp(6px, 1.2vh, 12px);
-        padding-bottom: 10px;
+        max-width: 620px;
+        padding: 26px;
+        gap: 18px;
     }
 
-    .imagem-mario {
-        width: clamp(140px, 22vh, 240px);
+    #modal {
+        width: min(460px, 92vw);
     }
-
-    .caixa-controles {
-        width: min(430px, 92vw);
-        padding: 12px;
-    }
-
-    .botao__texto {
-        font-size: clamp(18px, 2.4vh, 28px);
-    }
-
-
-    
-    .botao-criador {
-        top: 12px;
-        left: 12px;
-        right: auto;
-        padding: 10px;
-    }
-
-    .botao-criador__texto {
-        display: none;
-    }
-
-    .botao-criador__icone {
-        position: relative;
-        color: transparent;
-    }
-
-    .botao-criador__icone::before {
-        content: "";
-        display: block;
-        width: 18px;
-        height: 2px;
-        background: #fff;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 -5px 0 #fff, 0 5px 0 #fff;
-    }
-
-
 }
 
-@media (max-width: 768px) {
-    .decoracao--estrela {
-        display: none;
+/* Tablet (600px - 899px) */
+@media (min-width: 600px) and (max-width: 899px) {
+    html,
+    body {
+        overflow-y: auto;
     }
 
-    .titulo {
-        font-size: clamp(34px, 5.6vh, 56px);
+    body {
+        justify-content: flex-start;
+        padding: 24px 14px;
+        height: auto;
+        min-height: 100dvh;
     }
 
-    .subtitulo {
-        font-size: clamp(20px, 3.2vh, 30px);
+    .cabecalho {
+        max-width: 100%;
+        gap: 16px;
+        padding: 0 8px;
+    }
+
+    .cabecalho .txt {
+        font-size: clamp(34px, 6vw, 44px);
+    }
+
+    .container {
+        width: min(680px, 100%);
+        margin-top: 14px;
     }
 
     .centro-meio {
-        gap: 8px;
-        padding: 2px 12px 8px;
-    }
-
-    .cartao-resultado {
-        width: min(200px, 82vw);
-        gap: 6px;
-        padding: 8px 12px 10px;
-    }
-
-    .cartao-resultado__valor {
-        font-size: clamp(38px, 5.8vh, 58px);
-    }
-
-    .caixa-controles {
-        width: min(380px, 94vw);
-        padding: 10px;
+        max-width: 680px;
+        padding: 24px;
     }
 
     .intervalo {
+        gap: 12px;
+    }
+
+    .resultado {
+        min-height: 166px;
+    }
+
+    .resultado span {
+        font-size: clamp(80px, 14vw, 110px);
+    }
+
+    #modal {
+        width: min(520px, 94vw);
+        padding: 20px;
+    }
+}
+
+/* Telefones (<= 599px) */
+@media (max-width: 599px) {
+    html,
+    body {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    body {
+        justify-content: flex-start;
+        align-items: stretch;
+        height: auto;
+        min-height: 100dvh;
+        padding: 0 10px 24px;
+    }
+
+    body::before {
+        height: 260px;
+    }
+
+    .cabecalho {
+        margin: 0;
+        max-width: 100%;
+        gap: 2px;
+        padding: 0 4px;
+    }
+
+    .cabecalho .txt {
+        margin-bottom: 12%;
+        font-size: clamp(29px, 9.5vw, 38px);
+        line-height: 1.15;
+    }
+
+    .nav {
+        margin-top: 8%;
+        margin-bottom: 10%;
         gap: 10px;
     }
 
-    .campo__rotulo {
-        font-size: clamp(16px, 2.6vh, 22px);
+    .nav .logo {
+        font-size: 14px;
     }
 
-    .campo__entrada {
-        width: 78px;
-        height: 38px;
-        font-size: 22px;
+    .nav .logo::before {
+        width: 26px;
+        height: 26px;
+        font-size: 15px;
     }
 
-    .acoes {
-        gap: 8px;
-        margin-top: 8px;
+    .criador {
+        padding: 8px 12px;
     }
 
-    .botao {
+    .criador .criador-elements {
+        font-size: 0.85rem;
+    }
+
+    .container {
+        width: 100%;
+        border-radius: 14px;
+        margin-top: 12px;
+    }
+
+    .centro-meio {
+        max-width: 100%;
+        padding: 18px 14px;
+        gap: 16px;
+    }
+
+    .modo__options label {
+        font-size: 14px;
         padding: 8px 10px;
     }
 
-    .botao__icone {
-        width: 26px;
-        height: 22px;
-    }
-
-    .botao__texto {
-        font-size: clamp(16px, 2.2vh, 22px);
-    }
-
-    .dica {
-        font-size: 14px;
-    }
-
-    .modo-sorteio__titulo {
-        font-size: 10px;
-    }
-
-    .seletor-modo-switch {
-        width: min(240px, 100%);
-    }
-
-    .seletor-modo-switch__texto {
-        font-size: 11px;
-        letter-spacing: 0.04em;
-    }
-
-    .modo-sorteio__ajuda {
-        font-size: 10px;
-    }
-
-    .modo-sorteio {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "titulo",
-            "seletor" "ajuda";
-        justify-items: center;
-    }
-
-    .modo-sorteio__ajuda {
-        text-align: start;
-    }
-
-    .botao-criador {
-        top: 12px;
-        left: 12px;
-        right: auto;
-        padding: 10px;
-    }
-
-    .botao-criador__texto {
-        display: none;
-    }
-
-    .botao-criador__icone {
-        position: relative;
-        color: transparent;
-    }
-
-    .botao-criador__icone::before {
-        content: "";
-        display: block;
-        width: 18px;
-        height: 2px;
-        background: #fff;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 -5px 0 #fff, 0 5px 0 #fff;
-    }
-}
-
-@media (max-width: 480px) {
-    .decoracao--moeda,
-    .decoracao--cogumelo,
-    .decoracao--estrela {
-        display: none;
-    }
-
-    .nuvem--superior-esquerda {
-        display: none;
-    }
-
-    .cabecalho {
-        padding: 6px 10px 2px;
-    }
-
-    .titulo {
-        font-size: clamp(28px, 5vh, 44px);
-    }
-
-    .subtitulo {
-        font-size: clamp(16px, 2.6vh, 24px);
-    }
-
-    .imagem-mario {
-        width: clamp(110px, 17vh, 170px);
-    }
-
-    .aura-mario::before {
-        width: clamp(130px, 22vh, 210px);
-        height: clamp(130px, 22vh, 210px);
-    }
-
-    .cartao-resultado {
-        width: min(176px, 78vw);
-        border-radius: 16px;
-    }
-
-    .cartao-resultado__rotulo {
-        font-size: 12px;
-    }
-
-    .cartao-resultado__valor {
-        font-size: clamp(30px, 4.8vh, 46px);
-    }
-
-    .caixa-controles {
-        width: min(330px, 94vw);
-        padding: 8px;
-        border-radius: 14px;
-    }
-
     .intervalo {
+        flex-direction: row;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .intervalo > div {
+        max-width: 100%;
         gap: 8px;
     }
 
-    .campo {
-        gap: 4px;
+    .intervalo input[type="number"] {
+        height: 42px;
+        font-size: 17px;
     }
 
-    .campo__rotulo {
-        font-size: 14px;
+    .resultado {
+        min-height: 148px;
+        gap: 10px;
+        padding: 6px 10px;
     }
 
-    .campo__entrada {
-        width: 66px;
-        height: 34px;
-        font-size: 18px;
+    .resultado span {
+        min-width: 0;
+        font-size: clamp(62px, 23vw, 94px);
     }
 
     .botao {
-        border-radius: 10px;
+        width: 100%;
+        max-width: 100%;
     }
 
-    .botao__texto {
-        font-size: 14px;
+    .botao button {
+        width: 100%;
+        min-height: 46px;
+        font-size: 15px;
     }
 
-    .dica {
-        min-height: 1em;
-        margin-top: 2px;
-        font-size: 12px;
+    .historico {
+        gap: 8px;
+        flex-wrap: wrap;
     }
 
-    .seletor-modo-switch {
-        width: min(240px, 100%);
-    }
-
-    .seletor-modo-switch__texto {
+    .historico span {
+        width: 36px;
+        height: 28px;
         font-size: 11px;
     }
 
-    .modo-sorteio__ajuda {
-        font-size: 9px;
+    #modal {
+        width: min(560px, 70vw);
+        padding: 16px;
+    }
+
+    .modal-cabecalho h2 {
+        font-size: 24px;
+    }
+
+    .modal-cabecalho p {
+        font-size: 12px;
+    }
+
+    .container-info__card {
+        padding: 10px;
+    }
+
+    .info p {
+        font-size: 13px;
+    }
+
+    .info span {
+        font-size: 11px;
     }
 }
 
-@media (max-width: 400px) {
-    .botao-criador {
-        padding: 2px;
+/* Telefones muito pequenos (<= 379px) */
+@media (max-width: 379px) {
+    body {
+        padding: 0 8px 18px;
     }
 
-    .botao-criador__icone::before {
-        width:16px;
-        height: 1.5px;
-        box-shadow: 0 -4px 0 #fff, 0 4px 0 #fff;
+    .cabecalho .txt {
+        font-size: clamp(24px, 9vw, 30px);
     }
 
-    .titulo {
-        font-size: clamp(22px, 5vw, 32px);
-    }
-}
-
-@media (max-height: 760px) {
-    .nuvem--superior-esquerda,
-    .nuvem--inferior-esquerda,
-    .nuvem--superior-direita,
-    .decoracao--estrela {
-        display: none;
+    .nav .logo {
+        font-size: 13px;
     }
 
-    .cabecalho {
-        padding-top: 4px;
-    }
-
-    .titulo {
-          
-        font-size: clamp(23px, 5vw, 32px);
-   
-       
-    }
-
-    .subtitulo {
-        font-size: clamp(18px, 3.1vh, 28px);
-    }
-
-    .centro-meio {
-        gap: 7px;
-        padding-bottom: 6px;
-    }
-
-    .imagem-mario {
-        width: clamp(110px, 18vh, 190px);
-    }
-
-    .cartao-resultado {
-        width: min(190px, 78vw);
-        padding: 7px 10px 8px;
-        gap: 4px;
-    }
-
-    .cartao-resultado__valor {
-        font-size: clamp(30px, 5vh, 50px);
-    }
-
-    .caixa-controles {
-        width: min(360px, 92vw);
-        padding: 8px;
-    }
-
-    .campo__entrada {
-        height: 34px;
-        font-size: 18px;
-    }
-
-    .botao {
+    .criador {
         padding: 7px 10px;
     }
 
-    .botao__icone {
-        width: 24px;
-        height: 20px;
-    }
-
-    .botao__texto {
-        font-size: 14px;
-    }
-
-    .dica {
-        margin-top: 2px;
-        font-size: 12px;
-    }
-
-    .seletor-modo-switch__texto {
-        font-size: 11px;
-    }
-
-    .modo-sorteio__ajuda {
-        font-size: 9px;
-    }
-}
-
-@media (max-height: 640px) {
-    .decoracao--cogumelo {
-        display: none;
+    .criador .criador-elements {
+        font-size: 0.8rem;
     }
 
     .centro-meio {
+        padding: 14px 10px;
+        gap: 14px;
+    }
+
+    .modo__options label {
+        font-size: 12px;
+        padding: 7px 8px;
+    }
+
+    .intervalo input[type="number"] {
+        font-size: 14px;
+    }
+
+    .resultado span {
+        font-size: clamp(52px, 20vw, 78px);
+    }
+
+    .botao button {
+        font-size: 14px;
+        padding: 12px 16px;
+    }
+
+    .historico {
         gap: 6px;
     }
 
-    .imagem-mario {
-        width: clamp(96px, 16vh, 150px);
+    .historico span {
+        width: 32px;
+        height: 26px;
+        font-size: 10px;
     }
 
-    .cartao-resultado {
-        width: min(170px, 74vw);
+    
+    #modal {
+        width: min(560px, 78vw);
+        padding: 16px;
     }
 
-    .cartao-resultado__valor {
-        font-size: clamp(26px, 4.2vh, 40px);
+    .modal-cabecalho h2 {
+        font-size: 24px;
     }
 
-    .caixa-controles {
-        width: min(320px, 92vw);
-        padding: 7px;
+    .modal-cabecalho p {
+        font-size: 12px;
     }
 
-    .campo__rotulo {
+    .container-info__card {
+        padding: 10px;
+    }
+
+    .info p {
         font-size: 13px;
     }
 
-    .campo__entrada {
-        width: 60px;
-        height: 30px;
-        font-size: 16px;
-    }
-
-    .acoes {
-        margin-top: 6px;
-    }
-
-    .botao__texto {
-        font-size: 13px;
+    .info span {
+        font-size: 11px;
     }
 }

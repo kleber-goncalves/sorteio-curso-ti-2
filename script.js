@@ -3,16 +3,21 @@
     const resultado = document.getElementById("resultado");
     const inputMinimo = document.getElementById("minimo");
     const inputMaximo = document.getElementById("maximo");
-    const inputModoToggle = document.getElementById("modoToggle");
+    const inputModoAutomatico = document.getElementById("automatico");
+    const inputModoManual = document.getElementById("manual");
     const ajudaModo = document.getElementById("ajudaModo");
     const botaoComecar = document.getElementById("comecar");
     const botaoParar = document.getElementById("parar");
     const botaoResetar = document.getElementById("resetar");
-    const botaoAbrirCriador = document.getElementById("abrirCriador");
-    const overlayCriador = document.getElementById("overlayCriador");
-    const botaoFecharCriador = document.getElementById("fecharCriador");
     const dica = document.getElementById("dica");
     const cartaoResultado = document.querySelector(".cartao-resultado");
+    const historico = document.querySelector("#historico");
+    const rotuloResultado = document.querySelector(".resultado__rotulo");
+    const seletorModo = document.querySelector(".modo__options");
+    const modal = document.querySelector("#modal");
+    const abriModal = document.querySelector("#abrirModal");
+    const fecharModal = document.querySelector("#fecharModal");
+   
 
     const mediaMovimentoReduzido = window.matchMedia?.(
         "(prefers-reduced-motion: reduce)",
@@ -23,23 +28,56 @@
     let estaRodando = false;
     let modoSorteio = "manual";
 
+    let listaHistorico = [];
+    // Limita o tamanho do histórico ex: 10 numeros
+    const LIMITE_HISTORICO = 10;
+
+    function atualizarHistorico() {
+        if (!historico) return;
+
+        // Pega os 10 primeiros
+        const ultimos = listaHistorico.slice(0, LIMITE_HISTORICO);
+
+        historico.innerHTML = ultimos
+            .map((n, index) => {
+                // IMPORTAN AQUI: Se o index for 0 (o primeiro da esquerda), adicione a classe "ultimo-sorteado".
+                const classeNumSorteado = index === 0 ? "ultimo-sorteado" : "";
+                return `<span class="item-historico ${classeNumSorteado}">${n}</span>`;
+            })
+            .join("");
+    }
+
     function definirModoSorteio(novoModo) {
         modoSorteio = novoModo === "automatico" ? "automatico" : "manual";
-
-        if (ajudaModo) {
-            ajudaModo.textContent =
-                modoSorteio === "automatico"
-                    ? "O sistema gira e para sozinho com desaceleração suave."
-                    : "Você controla quando parar. clique em Parar para mostrar o número sorteado.";
-        }
 
         if (estaRodando) {
             limparGiro();
             definirRodando(false);
-        } else {
+        } else if (botaoParar) {
             // O botao Parar fique "desligado" ao trocar para manual.
             botaoParar.disabled = true;
         }
+
+        if (inputModoAutomatico) {
+            inputModoAutomatico.checked = modoSorteio === "automatico";
+        }
+        if (inputModoManual) {
+            inputModoManual.checked = modoSorteio !== "automatico";
+        }
+
+        // Atualizar texto do botão baseado no modo
+        if (botaoComecar) {
+            if (modoSorteio === "manual") {
+                botaoComecar.innerHTML = estaRodando
+                    ? `<img src="./img/erro.png" alt="" width="29" height="29"> <span class="span-sortear">Erro do texto do button do modo manual</span>`
+                    : `<i class="icon-sparkles"></i> <span class="span-sortear">Iniciar roleta</span>`;
+            } else {
+                botaoComecar.innerHTML = estaRodando
+                    ? `<img src="./img/error.png" alt="" width="29" height="29"> <span class="span-sortear">Erro do texto do button do modo automatico</span>`
+                    : `<i class="icon-sparkles"></i> <span class="span-sortear">Sortear numero</span>`;
+            }
+        }
+
     }
 
     // não esta sendo usado
@@ -57,7 +95,7 @@
 
     function lerIntervalo() {
         const valorMinimo = parsearInteiro(inputMinimo.value);
-        const valorMaximo = parsearInteiro(inputMaximo.value);
+        const valorMaximo = parsearInteiro(inputMaximo.value); 
 
         if (valorMinimo === null || valorMaximo === null) {
             return {
@@ -104,8 +142,42 @@
     function definirRodando(proximoRodando) {
         estaRodando = proximoRodando;
         conteiner.classList.toggle("esta-rodando", estaRodando);
-        botaoComecar.disabled = estaRodando;
-        botaoParar.disabled = !estaRodando || modoSorteio === "automatico";
+
+        if (botaoComecar) {
+            botaoComecar.disabled = estaRodando && modoSorteio === "automatico";
+
+            if (seletorModo) {
+                seletorModo.style.opacity = estaRodando ? 0.5 : 1;
+            }
+
+            if (rotuloResultado) {
+                rotuloResultado.textContent = estaRodando
+                    ? "Sorteando..."
+                    : "NÚMERO SORTEADO";
+            }
+
+            if (modoSorteio === "manual") {
+                if (estaRodando) {
+                    botaoComecar.innerHTML = `<i class="icon-square"></i> <span class="span-sortear">Parar</span>`;
+                    botaoComecar.classList.remove("button-bg-base");
+                    botaoComecar.classList.add("button-bg-manual__parar");
+                } else {
+                    botaoComecar.innerHTML = `<i class="icon-sparkles"></i> <span class="span-sortear">Iniciar roleta</span>`;
+                    botaoComecar.classList.remove("button-bg-manual__parar");
+                    botaoComecar.classList.add("button-bg-base");
+                }
+            } else {
+                // MODO AUTOMÁTICO
+                botaoComecar.classList.remove("button-bg-manual__parar");
+                botaoComecar.classList.add("button-bg-base");
+
+                botaoComecar.innerHTML = estaRodando
+                    ? `<i class="icon-sparkles"></i> <span class="span-sortear">Sorteando...</span>`
+                    : `<i class="icon-sparkles"></i> <span class="span-sortear">Sortear novamente</span>`;
+            }
+        }
+        if (botaoParar)
+            botaoParar.disabled = !estaRodando || modoSorteio === "automatico";
     }
 
     // resetar o giro
@@ -159,13 +231,14 @@
         idIntervalo = window.setInterval(() => {
             const intervaloAtual = lerIntervalo();
             if (!intervaloAtual.ok) return;
+            resultado.setAttribute("data-antigo", resultado.textContent);
             resultado.textContent = String(
                 inteiroAleatorioInclusivo(
                     intervaloAtual.minimo,
                     intervaloAtual.maximo,
                 ),
             );
-        }, 55);
+        },60);
     }
 
     function comecarAutomatico() {
@@ -192,9 +265,9 @@
         definirRodando(true);
         resultado.classList.add("esta-rolando");
 
-        const duracaoMs = 2600;
-        const intervaloRapidoMs = 38;
-        const intervaloLentoMs = 180;
+        const duracaoMs = 3600;
+        const intervaloRapidoMs = 18;
+        const intervaloLentoMs = 90;
 
         const inicio = performance.now();
         let proximaAtualizacaoEm = inicio;
@@ -211,6 +284,11 @@
             if (agora >= proximaAtualizacaoEm) {
                 const intervaloAtual = lerIntervalo();
                 if (intervaloAtual.ok) {
+                    resultado.setAttribute(
+                        "data-antigo",
+                                    resultado.textContent,
+                    );
+
                     resultado.textContent = String(
                         inteiroAleatorioInclusivo(
                             intervaloAtual.minimo,
@@ -237,86 +315,92 @@
         else comecarManual();
     }
 
-    function parar(automatico = false) {
+    function parar() {
         if (!estaRodando) return;
 
         const intervalo = lerIntervalo();
-        if (!intervalo.ok) {
-            limparGiro();
-            definirRodando(false);
-            definirDica(intervalo.mensagem, "erro");
-            return;
-        }
+        if (!intervalo.ok) return;
 
         limparGiro();
-        let numeroFinal = inteiroAleatorioInclusivo(
+
+        resultado.parentElement.classList.remove("esta-rolando");
+
+        resultado.classList.remove("numero-final-animado");
+        void resultado.offsetWidth; 
+        const numeroFinal = inteiroAleatorioInclusivo(
             intervalo.minimo,
             intervalo.maximo,
         );
-        if (automatico) {
-            const candidato = Number.parseInt(resultado.textContent, 10);
-            if (
-                Number.isFinite(candidato) &&
-                candidato >= intervalo.minimo &&
-                candidato <= intervalo.maximo
-            ) {
-                numeroFinal = candidato;
-            }
-        }
-        resultado.textContent = String(numeroFinal);
+
+        resultado.textContent = numeroFinal;
+        resultado.classList.add("numero-final-animado");
+
+        // SALVAR NO HISTÓRICO
+        listaHistorico.unshift(numeroFinal);
+        atualizarHistorico();
+
+       
+
         definirRodando(false);
         destacarCartao();
-        if (!automatico) definirDica(`Resultado: ${numeroFinal}`);
     }
 
     function resetar() {
         limparGiro();
         definirRodando(false);
+
         inputMinimo.value = "1";
         inputMaximo.value = "100";
         resultado.textContent = "?";
-        definirDica("");
+
+        // 🧠 LIMPAR HISTÓRICO
+        listaHistorico = [];
+        atualizarHistorico();
     }
 
-    function abrirModalCriador() {
-        if (!overlayCriador || !botaoAbrirCriador) return;
-        overlayCriador.hidden = false;
-        botaoAbrirCriador.setAttribute("aria-expanded", "true");
+    if (botaoComecar) {
+        botaoComecar.addEventListener("click", () => {
+            if (modoSorteio === "manual" && estaRodando) {
+                parar();
+            } else {
+                comecar();
+            }
+        });
+    }
+    if (botaoParar) {
+        botaoParar.addEventListener("click", parar);
+    }
+    if (botaoResetar) {
+        botaoResetar.addEventListener("click", resetar);
     }
 
-    function fecharModalCriador() {
-        if (!overlayCriador || !botaoAbrirCriador) return;
-        overlayCriador.hidden = true;
-        botaoAbrirCriador.setAttribute("aria-expanded", "false");
+    // abriModal
+    if (abriModal) {
+        abriModal.addEventListener("click", () => {
+            modal.showModal();
+        });
     }
-
-    botaoComecar.addEventListener("click", comecar);
-    botaoParar.addEventListener("click", parar);
-    botaoResetar.addEventListener("click", resetar);
-
-    if (botaoAbrirCriador) {
-        botaoAbrirCriador.addEventListener("click", abrirModalCriador);
-    }
-
-    if (botaoFecharCriador) {
-        botaoFecharCriador.addEventListener("click", fecharModalCriador);
-    }
-
-    if (overlayCriador) {
-        overlayCriador.addEventListener("click", (evento) => {
-            if (evento.target === overlayCriador) fecharModalCriador();
+    // fecharModal
+    if (fecharModal) {
+        fecharModal.addEventListener("click", () => {
+            modal.close();
         });
     }
 
-    if (inputModoToggle) {
-        inputModoToggle.addEventListener("change", () => {
-            definirModoSorteio(
-                inputModoToggle.checked ? "automatico" : "manual",
-            );
+
+    if (inputModoAutomatico) {
+        inputModoAutomatico.addEventListener("change", () => {
+            if (inputModoAutomatico.checked) definirModoSorteio("automatico");
         });
     }
 
-    // vai começar como (padrao: manual, toggle desligado)
+    if (inputModoManual) {
+        inputModoManual.addEventListener("change", () => {
+            if (inputModoManual.checked) definirModoSorteio("manual");
+        });
+    }
+
+    // vai começar como (padrao: manual)
     definirModoSorteio("manual");
 
     function validarEntradas() {
