@@ -56,6 +56,7 @@
     --borda-contorno: 14px;
 }
 
+/* tirar o destaque ao clicar no botão no celular */
 * {
   -webkit-tap-highlight-color: transparent;
 }
@@ -227,7 +228,6 @@ header {
     background: none;
 }
 
-/* MODO SECTION */
 .modo {
     width: 100%;
     display: flex;
@@ -295,11 +295,11 @@ header {
 /* Quando o input dentro do label estiver marcado...*/
 /* o seletor label:has(input:checked) será aplicado */
 .modo__options label:has(input:checked) {
-    background-color: var(--cor-primario); /* Verde neon */
-    color: #000000; /* Texto preto */
+    background-color: var(--cor-primario);
+    color: #000000; 
 }
 
-/* INTERVALO SECTION */
+
 .intervalo {
     width: 100%;
     display: flex;
@@ -355,7 +355,6 @@ header {
     margin: 0;
 }
 
-/* RESULTADO SECTION */
 .resultado {
     width: min(420px, 100%);
     display: flex;
@@ -516,7 +515,6 @@ header {
     animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* BOTAO SECTION */
 .botao {
     display: flex;
     align-items: center;
@@ -542,13 +540,13 @@ header {
     font-family: var(--fonte-base);
     position: relative;
     z-index: 1;
-    transition: all 100ms ease; /* Aumentei um pouco para notares o efeito */
+    transition: all 100ms ease;
 }
 
 button.button-bg-base {
     background-color: var(
         --bg-button-primario
-    ) !important; /* Cor sólida para o navegador conseguir animar */
+    ) !important;
     background: linear-gradient(
         135deg,
         var(--bg-button-primario-degrade-1) 0%,
@@ -560,7 +558,7 @@ button.button-bg-base {
 button.button-bg-manual__parar {
     background-color: var(
         --bg-button-secundario
-    ) !important; /* Cor sólida alvo */
+    ) !important;
     color: #fff !important;
     background: linear-gradient(
         135deg,
@@ -574,6 +572,14 @@ button.button-bg-manual__parar {
     padding: 0;
 }
 
+.dica {
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 200;
+    color: rgba(255, 255, 255, 0.72);
+    text-align: center;
+}
 .atalho {
     margin: 0;
     color: rgba(255, 255, 255, 0.72);
@@ -595,7 +601,6 @@ button.button-bg-manual__parar {
     font-weight: 700;
 }
 
-/* HISTORICO SECTION */
 .HISTORICO {
     width: 100%;
     display: flex;
@@ -646,7 +651,6 @@ button.button-bg-manual__parar {
     transform: scale(1.12);
 }
 
-/* 1. Estilização da Janela Modal */
 #modal {
     border: 2px solid var(--bordar-centro);
     background-color: var(--bg-centro);
@@ -657,16 +661,15 @@ button.button-bg-manual__parar {
     position: fixed;
 }
 
-/* 2. Estilização do Fundo (Backdrop) */
-/* O navegador cria este pseudo-elemento automaticamente com o showModal() */
+
 #modal::backdrop {
     background-color: rgba(
         0,
         0,
         0,
         0.5
-    ); /* Cor preta com 50% de transparência */
-    backdrop-filter: blur(3px); /* Efeito de desfoque no fundo (opcional) */
+    );
+    backdrop-filter: blur(3px); 
 }
 
 .modal-cabecalho {

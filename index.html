@@ -5,13 +5,13 @@
         <!-- Preview para do link -->
         <meta
             property="og:image"
-            content="https://sorteio-curso-ti.vercel.app/preview-mb.png"
+            content="https://sorteio-curso-ti-2.vercel.app/preview-mb.png"
         />
 
         <!-- Preview para o Twitter/X ler a imagem corretamente -->
         <meta
             name="twitter:image"
-            content="https://sorteio-curso-ti.vercel.app/preview-mb.png"
+            content="https://sorteio-curso-ti-2.vercel.app/preview-mb.png"
         />
 
         <!-- Título e texto -->
@@ -22,7 +22,7 @@
         />
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/png" href="as.png" />
+        <link rel="icon" type="image/png" href="favicon-32x32.png" />
         <link rel="stylesheet" href="style.css" />
         <link rel="stylesheet" href="responsivo.css" />
         <link
@@ -30,14 +30,14 @@
             href="https://unpkg.com/lucide-static@latest/font/lucide.css"
         />
 
-        <title>Sorteio do Mario</title>
+        <title>Sorteio II</title>
     </head>
     <body>
-        <header class="cabecalho">
+        <header class="cabecalho nao-selecionavel">
             <nav class="nav">
                 <div class="logo">
                     <img src="" alt="" />
-                    <p>Sorteador</p>
+                    <p>Sorteador II</p>
                 </div>
                 <div class="criador" id="abrirModal">
                     <i class="criador-elements icon-user"></i>
@@ -49,7 +49,7 @@
             </div>
         </header>
 
-        <main class="container">
+        <main class="container nao-selecionavel">
             <section class="centro-meio">
                 <div class="modo">
                     <p>MODO</p>
@@ -107,7 +107,8 @@
             </section>
         </main>
 
-        <dialog id="modal">
+        <!-- MODAL -->
+        <dialog id="modal" class="nao-selecionavel">
             <div style="display: flex; justify-content: flex-end;">
                 <button id="fecharModal" type="button">X</button>
             </div>
@@ -154,7 +155,7 @@
                             </div>
                             <div class="info">
                                 <p>LinkedIn</p>
-                                <span>kleber_goncalves.s</span>
+                                <span>in/kleber-goncalves-s</span>
                             </div>
                         </div>
 

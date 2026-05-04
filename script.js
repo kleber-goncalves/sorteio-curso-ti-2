@@ -40,7 +40,7 @@
 
         historico.innerHTML = ultimos
             .map((n, index) => {
-                // VERIFICAÇÃO AQUI: Se o index for 0 (o primeiro da esquerda), adicione a classe "ultimo-sorteado".
+                // IMPORTAN AQUI: Se o index for 0 (o primeiro da esquerda), adicione a classe "ultimo-sorteado".
                 const classeNumSorteado = index === 0 ? "ultimo-sorteado" : "";
                 return `<span class="item-historico ${classeNumSorteado}">${n}</span>`;
             })
@@ -94,11 +94,8 @@
     }
 
     function lerIntervalo() {
-        //const valorMinimo = parsearInteiro(inputMinimo.value);
-        //const valorMaximo = parsearInteiro(inputMaximo.value); 
-
-        const valorMinimo = 1;
-        const valorMaximo = 111;
+        const valorMinimo = parsearInteiro(inputMinimo.value);
+        const valorMaximo = parsearInteiro(inputMaximo.value); 
 
         if (valorMinimo === null || valorMaximo === null) {
             return {
@@ -171,7 +168,6 @@
                 }
             } else {
                 // MODO AUTOMÁTICO
-                // Garantimos que o botão volte à cor base caso tenha vindo do  manual
                 botaoComecar.classList.remove("button-bg-manual__parar");
                 botaoComecar.classList.add("button-bg-base");
 
