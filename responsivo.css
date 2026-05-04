@@ -202,9 +202,10 @@
     }
 
     .intervalo {
-        flex-direction: column;
+        flex-direction: row;
         align-items: stretch;
         gap: 12px;
+        height: 56px;
     }
 
     .intervalo > div {
@@ -214,7 +215,7 @@
 
     .intervalo input[type="number"] {
         height: 42px;
-        font-size: 15px;
+        font-size: 17px;
     }
 
     .resultado {

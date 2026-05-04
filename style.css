@@ -311,7 +311,6 @@ header {
     align-items: start;
     gap: 10px;
     width: 100%;
-    max-width: 264px;
 }
 
 .intervalo label {
