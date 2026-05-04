@@ -9,12 +9,15 @@
     const botaoComecar = document.getElementById("comecar");
     const botaoParar = document.getElementById("parar");
     const botaoResetar = document.getElementById("resetar");
-    const botaoAbrirCriador = document.getElementById("abrirCriador");
-    const overlayCriador = document.getElementById("overlayCriador");
-    const botaoFecharCriador = document.getElementById("fecharCriador");
     const dica = document.getElementById("dica");
     const cartaoResultado = document.querySelector(".cartao-resultado");
     const historico = document.querySelector("#historico");
+    const rotuloResultado = document.querySelector(".resultado__rotulo");
+    const seletorModo = document.querySelector(".modo__options");
+    const modal = document.querySelector("#modal");
+    const abriModal = document.querySelector("#abrirModal");
+    const fecharModal = document.querySelector("#fecharModal");
+   
 
     const mediaMovimentoReduzido = window.matchMedia?.(
         "(prefers-reduced-motion: reduce)",
@@ -67,11 +70,11 @@
             if (modoSorteio === "manual") {
                 botaoComecar.innerHTML = estaRodando
                     ? `<img src="./img/erro.png" alt="" width="29" height="29"> <span class="span-sortear">Erro do texto do button do modo manual</span>`
-                    : `<img src="./img/brilho-2.png" alt="" width="19" height="19"> <span class="span-sortear">Iniciar roleta</span>`;
+                    : `<i class="icon-sparkles"></i> <span class="span-sortear">Iniciar roleta</span>`;
             } else {
                 botaoComecar.innerHTML = estaRodando
-                        ? `<img src="./img/error.png" alt="" width="29" height="29"> <span class="span-sortear">Erro do texto do button do modo automatico</span>`
-                        : `<img src="./img/brilho-2.png" alt="" width="19" height="19"> <span class="span-sortear">Sortear numero</span>`;
+                    ? `<img src="./img/error.png" alt="" width="29" height="29"> <span class="span-sortear">Erro do texto do button do modo automatico</span>`
+                    : `<i class="icon-sparkles"></i> <span class="span-sortear">Sortear numero</span>`;
             }
         }
 
@@ -91,8 +94,11 @@
     }
 
     function lerIntervalo() {
-        const valorMinimo = parsearInteiro(inputMinimo.value);
-        const valorMaximo = parsearInteiro(inputMaximo.value);
+        //const valorMinimo = parsearInteiro(inputMinimo.value);
+        //const valorMaximo = parsearInteiro(inputMaximo.value); 
+
+        const valorMinimo = 1;
+        const valorMaximo = 111;
 
         if (valorMinimo === null || valorMaximo === null) {
             return {
@@ -143,14 +149,23 @@
         if (botaoComecar) {
             botaoComecar.disabled = estaRodando && modoSorteio === "automatico";
 
+            if (seletorModo) {
+                seletorModo.style.opacity = estaRodando ? 0.5 : 1;
+            }
+
+            if (rotuloResultado) {
+                rotuloResultado.textContent = estaRodando
+                    ? "Sorteando..."
+                    : "NÚMERO SORTEADO";
+            }
+
             if (modoSorteio === "manual") {
                 if (estaRodando) {
-                    botaoComecar.innerHTML = "Parar";
+                    botaoComecar.innerHTML = `<i class="icon-square"></i> <span class="span-sortear">Parar</span>`;
                     botaoComecar.classList.remove("button-bg-base");
                     botaoComecar.classList.add("button-bg-manual__parar");
-                }
-                else {
-                    botaoComecar.innerHTML = `<img src="./img/brilho-2.png" alt="" width="19" height="19"> <span class="span-sortear">Iniciar roleta novamente</span>`;
+                } else {
+                    botaoComecar.innerHTML = `<i class="icon-sparkles"></i> <span class="span-sortear">Iniciar roleta</span>`;
                     botaoComecar.classList.remove("button-bg-manual__parar");
                     botaoComecar.classList.add("button-bg-base");
                 }
@@ -161,8 +176,8 @@
                 botaoComecar.classList.add("button-bg-base");
 
                 botaoComecar.innerHTML = estaRodando
-                    ? "Sorteando..."
-                    : `<img src="./img/brilho-2.png" alt="" width="19" height="19">     <span class="span-sortear">Sortear novamente</span>`;
+                    ? `<i class="icon-sparkles"></i> <span class="span-sortear">Sorteando...</span>`
+                    : `<i class="icon-sparkles"></i> <span class="span-sortear">Sortear novamente</span>`;
             }
         }
         if (botaoParar)
@@ -220,13 +235,14 @@
         idIntervalo = window.setInterval(() => {
             const intervaloAtual = lerIntervalo();
             if (!intervaloAtual.ok) return;
+            resultado.setAttribute("data-antigo", resultado.textContent);
             resultado.textContent = String(
                 inteiroAleatorioInclusivo(
                     intervaloAtual.minimo,
                     intervaloAtual.maximo,
                 ),
             );
-        }, 55);
+        },60);
     }
 
     function comecarAutomatico() {
@@ -253,9 +269,9 @@
         definirRodando(true);
         resultado.classList.add("esta-rolando");
 
-        const duracaoMs = 2600;
-        const intervaloRapidoMs = 38;
-        const intervaloLentoMs = 180;
+        const duracaoMs = 3600;
+        const intervaloRapidoMs = 18;
+        const intervaloLentoMs = 90;
 
         const inicio = performance.now();
         let proximaAtualizacaoEm = inicio;
@@ -272,6 +288,11 @@
             if (agora >= proximaAtualizacaoEm) {
                 const intervaloAtual = lerIntervalo();
                 if (intervaloAtual.ok) {
+                    resultado.setAttribute(
+                        "data-antigo",
+                                    resultado.textContent,
+                    );
+
                     resultado.textContent = String(
                         inteiroAleatorioInclusivo(
                             intervaloAtual.minimo,
@@ -306,14 +327,19 @@
 
         limparGiro();
 
+        resultado.parentElement.classList.remove("esta-rolando");
+
+        resultado.classList.remove("numero-final-animado");
+        void resultado.offsetWidth; 
         const numeroFinal = inteiroAleatorioInclusivo(
             intervalo.minimo,
             intervalo.maximo,
         );
 
         resultado.textContent = numeroFinal;
+        resultado.classList.add("numero-final-animado");
 
-        // 🔥 SALVAR NO HISTÓRICO
+        // SALVAR NO HISTÓRICO
         listaHistorico.unshift(numeroFinal);
         atualizarHistorico();
 
@@ -336,18 +362,6 @@
         atualizarHistorico();
     }
 
-    function abrirModalCriador() {
-        if (!overlayCriador || !botaoAbrirCriador) return;
-        overlayCriador.hidden = false;
-        botaoAbrirCriador.setAttribute("aria-expanded", "true");
-    }
-
-    function fecharModalCriador() {
-        if (!overlayCriador || !botaoAbrirCriador) return;
-        overlayCriador.hidden = true;
-        botaoAbrirCriador.setAttribute("aria-expanded", "false");
-    }
-
     if (botaoComecar) {
         botaoComecar.addEventListener("click", () => {
             if (modoSorteio === "manual" && estaRodando) {
@@ -364,19 +378,19 @@
         botaoResetar.addEventListener("click", resetar);
     }
 
-    if (botaoAbrirCriador) {
-        botaoAbrirCriador.addEventListener("click", abrirModalCriador);
-    }
-
-    if (botaoFecharCriador) {
-        botaoFecharCriador.addEventListener("click", fecharModalCriador);
-    }
-
-    if (overlayCriador) {
-        overlayCriador.addEventListener("click", (evento) => {
-            if (evento.target === overlayCriador) fecharModalCriador();
+    // abriModal
+    if (abriModal) {
+        abriModal.addEventListener("click", () => {
+            modal.showModal();
         });
     }
+    // fecharModal
+    if (fecharModal) {
+        fecharModal.addEventListener("click", () => {
+            modal.close();
+        });
+    }
+
 
     if (inputModoAutomatico) {
         inputModoAutomatico.addEventListener("change", () => {
