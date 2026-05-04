@@ -144,7 +144,7 @@
         align-items: stretch;
         height: auto;
         min-height: 100dvh;
-        padding: 18px 10px 24px;
+        padding: 0 10px 24px;
     }
 
     body::before {
@@ -152,17 +152,21 @@
     }
 
     .cabecalho {
+        margin: 0;
         max-width: 100%;
-        gap: 14px;
+        gap: 2px;
         padding: 0 4px;
     }
 
     .cabecalho .txt {
+        margin-bottom: 12%;
         font-size: clamp(29px, 9.5vw, 38px);
         line-height: 1.15;
     }
 
     .nav {
+        margin-top: 8%;
+        margin-bottom: 10%;
         gap: 10px;
     }
 
@@ -205,7 +209,6 @@
         flex-direction: row;
         align-items: stretch;
         gap: 12px;
-        height: 56px;
     }
 
     .intervalo > div {
@@ -252,7 +255,7 @@
     }
 
     #modal {
-        width: min(560px, 96vw);
+        width: min(560px, 70vw);
         padding: 16px;
     }
 
