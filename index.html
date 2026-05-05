@@ -76,11 +76,23 @@
                 <div class="intervalo">
                     <div>
                         <label for="minimo">Mínimo</label>
-                        <input type="number" name="minimo" id="minimo" />
+                        <input
+                            type="text"
+                            inputmode="numeric"
+                            name="minimo"
+                            autocomplete="off"
+                            id="minimo"
+                        />
                     </div>
                     <div>
                         <label for="maximo">Máximo</label>
-                        <input type="number" name="maximo" id="maximo" />
+                        <input
+                            type="text"
+                            inputmode="numeric"
+                            name="maximo"
+                            autocomplete="off"
+                            id="maximo"
+                        />
                     </div>
                 </div>
 
@@ -101,7 +113,18 @@
                 <p class="dica" id="dica"></p>
 
                 <div class="HISTORICO">
-                    <p>HISTÓRICO</p>
+                    <div class="HISTORICO__cabecalho">
+                        <p>HISTÓRICO</p>
+                        <button
+                            class="button-limpar"
+                            id="limparHistorico"
+                            type="button"
+                        >
+                            <i class="icon-trash-2"></i>
+                            LIMPAR HISTÓRICO
+                        </button>
+                    </div>
+
                     <div id="historico" class="historico"></div>
                 </div>
             </section>
@@ -109,7 +132,7 @@
 
         <!-- MODAL -->
         <dialog id="modal" class="nao-selecionavel">
-            <div style="display: flex; justify-content: flex-end;">
+            <div style="display: flex; justify-content: flex-end">
                 <button id="fecharModal" type="button">X</button>
             </div>
 
@@ -125,7 +148,12 @@
                 </div>
 
                 <nav class="redes-sociais">
-                    <a href="https://www.linkedin.com/in/kleber-goncalve-s/" target="_blank" class="container-info__card" id="linkedin">
+                    <a
+                        href="https://www.linkedin.com/in/kleber-goncalve-s/"
+                        target="_blank"
+                        class="container-info__card"
+                        id="linkedin"
+                    >
                         <div class="container-info__content">
                             <div class="icons">
                                 <svg
@@ -161,7 +189,12 @@
 
                         <i class="icon-move-up-right"></i>
                     </a>
-                    <a href="https://www.instagram.com/kleber_goncalves.s/" target="_blank" class="container-info__card" id="instagram">
+                    <a
+                        href="https://www.instagram.com/kleber_goncalves.s/"
+                        target="_blank"
+                        class="container-info__card"
+                        id="instagram"
+                    >
                         <div class="container-info__content">
                             <div class="icons">
                                 <svg
@@ -203,7 +236,12 @@
                         </div>
                         <i class="icon-move-up-right"></i>
                     </a>
-                    <a href="https://github.com/kleber-goncalves"   target="_blank" class="container-info__card" id="github">
+                    <a
+                        href="https://github.com/kleber-goncalves"
+                        target="_blank"
+                        class="container-info__card"
+                        id="github"
+                    >
                         <div class="container-info__content">
                             <div class="icons">
                                 <svg
@@ -235,8 +273,6 @@
                 </nav>
             </div>
         </dialog>
-
-        
 
         <script src="script.js"></script>
     </body>

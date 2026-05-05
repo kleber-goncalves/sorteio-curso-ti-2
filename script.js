@@ -8,7 +8,6 @@
     const ajudaModo = document.getElementById("ajudaModo");
     const botaoComecar = document.getElementById("comecar");
     const botaoParar = document.getElementById("parar");
-    const botaoResetar = document.getElementById("resetar");
     const dica = document.getElementById("dica");
     const cartaoResultado = document.querySelector(".cartao-resultado");
     const historico = document.querySelector("#historico");
@@ -17,7 +16,12 @@
     const modal = document.querySelector("#modal");
     const abriModal = document.querySelector("#abrirModal");
     const fecharModal = document.querySelector("#fecharModal");
-   
+    const limparHistorico = document.querySelector("#limparHistorico");
+
+    const erroMinimo = document.getElementById("erroMinimo");
+    const erroMaximo = document.getElementById("erroMaximo");
+
+    const btnValidar = document.getElementById("btnValidar");
 
     const mediaMovimentoReduzido = window.matchMedia?.(
         "(prefers-reduced-motion: reduce)",
@@ -77,45 +81,130 @@
                     : `<i class="icon-sparkles"></i> <span class="span-sortear">Sortear numero</span>`;
             }
         }
-
     }
 
     // não esta sendo usado
-    function definirDica(mensagem = "", tipo = "") {
+    function definirDica(mensagem, tipo = "") {
         dica.textContent = mensagem;
+        dica.style.color = tipo === "erro" ? "red" : "green";
         if (tipo) dica.dataset.tipo = tipo;
         else delete dica.dataset.tipo;
     }
 
+    function analisarEntrada(valor) {
+        const texto = valor.trim();
+
+        if (texto === "") {
+            return { tipo: "vazio" };
+        }
+
+        const apenasInteiros = /^-?\d+$/;
+
+        if (!apenasInteiros.test(texto)) {
+            return { tipo: "invalido" };
+        }
+
+        return { tipo: "valido", numero: Number(texto) };
+    }
+
     function parsearInteiro(valor) {
-        const numero = Number(valor);
-        if (!Number.isFinite(numero)) return null;
-        return Math.trunc(numero);
+        const texto = valor.trim();
+        if (valor.trim() === "") return null;
+        if (texto === "") return null;
+
+        const apenasInteiros = /^-?\d+$/;
+        if (!apenasInteiros.test(texto)) return null;
+
+        const numero = Number(texto);
+        return Number.isFinite(numero) ? Math.trunc(numero) : null;
     }
 
     function lerIntervalo() {
-        const valorMinimo = parsearInteiro(inputMinimo.value);
-        const valorMaximo = parsearInteiro(inputMaximo.value); 
+        const min = analisarEntrada(inputMinimo.value);
+        const max = analisarEntrada(inputMaximo.value);
+        // Reset visual
+        inputMinimo.style.border = "";
+        inputMaximo.style.border = "";
 
-        if (valorMinimo === null || valorMaximo === null) {
+        // Ambos vazios
+        if (min.tipo === "vazio" && max.tipo === "vazio") {
+            inputMinimo.style.border = "2px solid red";
+            inputMaximo.style.border = "2px solid red";
+            botaoComecar.style.cursor = "not-allowed";
+            botaoComecar.classList.remove("button-bg-base");
+            botaoComecar.classList.add("button-bg-erro");
             return {
                 ok: false,
-                mensagem: "Preencha MÍN e MÁX com números inteiros.",
+                mensagem: "MÍN e MÁX não possdem ser vazios.",
             };
         }
 
-        if (valorMinimo > valorMaximo) {
+        // Mínimo vazio
+        if (min.tipo === "vazio") {
             return {
                 ok: false,
-                mensagem: "MÍN precisa ser menor ou igual a MÁX.",
+                mensagem: "MÍN não pode ser vazio.",
             };
         }
 
-        if (valorMinimo === valorMaximo) {
-            return { ok: false, mensagem: "MÍN e MÁX não podem ser iguais." };
+        // Mínimo inválido
+        if (min.tipo === "invalido") {
+            return {
+                ok: false,
+                mensagem: "MÍN deve ser um número inteiro válido.",
+            };
         }
 
-        return { ok: true, minimo: valorMinimo, maximo: valorMaximo };
+        // Máximo vazio
+        if (max.tipo === "vazio") {
+            botaoComecar.classList.remove("button-bg-base");
+            botaoComecar.classList.add("button-bg-erro");
+            botaoComecar.style.cursor = "not-allowed";
+            inputMaximo.style.border = "2px solid red";
+            return {
+                ok: false,
+                mensagem: "MÁX não pode ser vazio.",
+            };
+        }
+
+        // Máximo inválido
+        if (max.tipo === "invalido") {
+            return {
+                ok: false,
+                mensagem: "MÁX deve ser um número inteiro válido.",
+            };
+        }
+
+        const minimo = min.numero;
+        const maximo = max.numero;
+
+        // Iguais
+        if (minimo === maximo) {
+            inputMinimo.style.border = "2px solid red";
+            inputMaximo.style.border = "2px solid red";
+            botaoComecar.style.cursor = "not-allowed";
+            botaoComecar.classList.remove("button-bg-base");
+            botaoComecar.classList.add("button-bg-erro");
+            return {
+                ok: false,
+                mensagem: "MÍN e MÁX não podem ser iguais.",
+            };
+        }
+
+        // Intervalo inválido
+        if (minimo > maximo) {
+            return {
+                ok: false,
+                mensagem: "MÍN deve ser menor que MÁX.",
+            };
+        }
+
+        // Tudo certo
+        return {
+            ok: true,
+            minimo,
+            maximo,
+        };
     }
 
     function inteiroAleatorioInclusivo(minimo, maximo) {
@@ -139,8 +228,14 @@
         return minimo + (valor % amplitude);
     }
 
+    function setInputsBloqueados(bloquear) {
+        inputMinimo.disabled = bloquear;
+        inputMaximo.disabled = bloquear;
+    }
+
     function definirRodando(proximoRodando) {
         estaRodando = proximoRodando;
+        setInputsBloqueados(true);
         conteiner.classList.toggle("esta-rodando", estaRodando);
 
         if (botaoComecar) {
@@ -168,9 +263,14 @@
                 }
             } else {
                 // MODO AUTOMÁTICO
-                botaoComecar.classList.remove("button-bg-manual__parar");
-                botaoComecar.classList.add("button-bg-base");
-
+                if (estaRodando) {
+                    botaoComecar.classList.remove("button-bg-base");
+                    botaoComecar.classList.add("button-bg-rodando-auto");
+                    botaoComecar.style.cursor = "not-allowed";
+                } else {
+                    botaoComecar.classList.remove("button-bg-rodando-auto");
+                    botaoComecar.classList.add("button-bg-base");
+                }
                 botaoComecar.innerHTML = estaRodando
                     ? `<i class="icon-sparkles"></i> <span class="span-sortear">Sorteando...</span>`
                     : `<i class="icon-sparkles"></i> <span class="span-sortear">Sortear novamente</span>`;
@@ -194,11 +294,7 @@
     }
 
     // lipar o numero do cartao
-    function destacarCartao() {
-        cartaoResultado.classList.remove("esta-pop");
-        void cartaoResultado.offsetHeight;
-        cartaoResultado.classList.add("esta-pop");
-    }
+
 
     function easeOutCubic(t) {
         return 1 - Math.pow(1 - t, 3);
@@ -219,7 +315,7 @@
                 intervalo.maximo,
             );
             resultado.textContent = String(numeroFinal);
-            destacarCartao();
+       
             definirDica(`Resultado: ${numeroFinal}`);
             return;
         }
@@ -238,7 +334,7 @@
                     intervaloAtual.maximo,
                 ),
             );
-        },60);
+        }, 60);
     }
 
     function comecarAutomatico() {
@@ -256,7 +352,7 @@
                 intervalo.maximo,
             );
             resultado.textContent = String(numeroFinal);
-            destacarCartao();
+         
             definirDica(`Resultado: ${numeroFinal}`);
             return;
         }
@@ -286,7 +382,7 @@
                 if (intervaloAtual.ok) {
                     resultado.setAttribute(
                         "data-antigo",
-                                    resultado.textContent,
+                        resultado.textContent,
                     );
 
                     resultado.textContent = String(
@@ -317,6 +413,10 @@
 
     function parar() {
         if (!estaRodando) return;
+        
+        definirRodando(false);
+
+        setInputsBloqueados(false);
 
         const intervalo = lerIntervalo();
         if (!intervalo.ok) return;
@@ -326,7 +426,7 @@
         resultado.parentElement.classList.remove("esta-rolando");
 
         resultado.classList.remove("numero-final-animado");
-        void resultado.offsetWidth; 
+        void resultado.offsetWidth;
         const numeroFinal = inteiroAleatorioInclusivo(
             intervalo.minimo,
             intervalo.maximo,
@@ -339,21 +439,11 @@
         listaHistorico.unshift(numeroFinal);
         atualizarHistorico();
 
-       
 
-        definirRodando(false);
-        destacarCartao();
     }
 
     function resetar() {
-        limparGiro();
-        definirRodando(false);
-
-        inputMinimo.value = "1";
-        inputMaximo.value = "100";
-        resultado.textContent = "?";
-
-        // 🧠 LIMPAR HISTÓRICO
+        // LIMPAR HISTÓRICO
         listaHistorico = [];
         atualizarHistorico();
     }
@@ -370,8 +460,8 @@
     if (botaoParar) {
         botaoParar.addEventListener("click", parar);
     }
-    if (botaoResetar) {
-        botaoResetar.addEventListener("click", resetar);
+    if (limparHistorico) {
+        limparHistorico.addEventListener("click", resetar);
     }
 
     // abriModal
@@ -386,7 +476,6 @@
             modal.close();
         });
     }
-
 
     if (inputModoAutomatico) {
         inputModoAutomatico.addEventListener("change", () => {
@@ -403,15 +492,96 @@
     // vai começar como (padrao: manual)
     definirModoSorteio("manual");
 
+    // valida em tempo real
     function validarEntradas() {
         if (estaRodando) return;
-        const intervalo = lerIntervalo();
-        if (!intervalo.ok) definirDica(intervalo.mensagem, "erro");
-        else definirDica("");
+
+        const min = analisarEntrada(inputMinimo.value);
+        const max = analisarEntrada(inputMaximo.value);
+
+        // Reset visual
+        inputMinimo.style.border = "";
+        inputMaximo.style.border = "";
+
+        // Ambos vazios
+        if (min.tipo === "vazio" && max.tipo === "vazio") {
+            definirDica("", "erro");
+            return;
+        }
+
+        // Mínimo vazio
+        if (min.tipo === "vazio") {
+            definirDica("", "erro");
+            return;
+        }
+
+        // Mínimo inválido
+        if (min.tipo === "invalido") {
+            inputMinimo.style.border = "2px solid red";
+            botaoComecar.classList.remove("button-bg-base");
+            botaoComecar.classList.add("button-bg-erro");
+            botaoComecar.style.cursor = "not-allowed";
+            definirDica("MÍN deve ser um número inteiro válido.", "erro");
+            return;
+        }
+
+        //  Máximo vazio
+        if (max.tipo === "vazio") {
+            definirDica("", "ok");
+            return;
+        }
+
+        //  Máximo inválido
+        if (max.tipo === "invalido") {
+            inputMaximo.style.border = "2px solid red";
+            botaoComecar.classList.remove("button-bg-base");
+            botaoComecar.classList.add("button-bg-erro");
+            botaoComecar.style.cursor = "not-allowed";
+            definirDica("MÁX deve ser um número inteiro válido.", "erro");
+            return;
+        }
+
+        const minimo = min.numero;
+        const maximo = max.numero;
+
+        // Iguais
+        if (minimo === maximo) {
+            botaoComecar.classList.remove("button-bg-base");
+            botaoComecar.classList.add("button-bg-erro");
+            botaoComecar.style.cursor = "not-allowed";
+            definirDica("", "erro");
+            return;
+        }
+
+        // Intervalo inválido
+        if (minimo > maximo) {
+            inputMinimo.style.border = "2px solid red";
+            botaoComecar.style.cursor = "not-allowed";
+            botaoComecar.classList.remove("button-bg-base");
+            botaoComecar.classList.add("button-bg-erro");
+            definirDica("MÍN deve ser menor que MÁX.", "erro");
+            return;
+        }
+
+        // Sucesso
+        inputMinimo.style.border = "2px solid #d0ff4dac";
+        inputMaximo.style.border = "2px solid #d0ff4dac";
+        botaoComecar.classList.remove("button-bg-erro");
+        botaoComecar.classList.add("button-bg-base");
+        botaoComecar.style.cursor = "pointer";
+        definirDica("", "ok");
     }
 
     inputMinimo.addEventListener("input", validarEntradas);
     inputMaximo.addEventListener("input", validarEntradas);
+
+    inputMinimo.addEventListener("input", () => {
+        inputMinimo.value = inputMinimo.value.replace(/[^\d-]/g, "");
+    });
+
+    inputMaximo.addEventListener("input", () => {
+        inputMaximo.value = inputMaximo.value.replace(/[^\d-]/g, "");
+    });
 
     window.addEventListener("keydown", (evento) => {
         if (evento.key === "Enter" && !evento.repeat) {
