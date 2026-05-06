@@ -522,7 +522,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: min(420px, 100%);
+    width: fit-content;
     max-width: 420px;
     transition: 200ms ease;
 }
@@ -587,6 +587,16 @@ button.button-bg-rodando-auto {
          rgb(121, 142, 46) 100%
     ) !important;
 }
+
+.botao .button-copy {
+    display: none;
+    background-color:  rgb(32, 32, 32) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: 200ms ease;
+    align-items: center;
+    justify-content: center;
+} 
 
 .dica {
     margin: 0;

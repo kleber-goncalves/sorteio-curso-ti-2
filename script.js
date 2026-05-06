@@ -17,6 +17,7 @@
     const abriModal = document.querySelector("#abrirModal");
     const fecharModal = document.querySelector("#fecharModal");
     const limparHistorico = document.querySelector("#limparHistorico");
+    const botaoCopiar = document.querySelector("#button-Copy");
 
     const erroMinimo = document.getElementById("erroMinimo");
     const erroMaximo = document.getElementById("erroMaximo");
@@ -235,6 +236,7 @@
 
     function definirRodando(proximoRodando) {
         estaRodando = proximoRodando;
+
         setInputsBloqueados(true);
         conteiner.classList.toggle("esta-rodando", estaRodando);
 
@@ -250,6 +252,10 @@
                     ? "Sorteando..."
                     : "NÚMERO SORTEADO";
             }
+
+             if (botaoCopiar) {
+                 botaoCopiar.style.display = "none"; // Ou "inline-block" conforme o teu design
+             }
 
             if (modoSorteio === "manual") {
                 if (estaRodando) {
@@ -295,7 +301,6 @@
 
     // lipar o numero do cartao
 
-
     function easeOutCubic(t) {
         return 1 - Math.pow(1 - t, 3);
     }
@@ -315,7 +320,7 @@
                 intervalo.maximo,
             );
             resultado.textContent = String(numeroFinal);
-       
+
             definirDica(`Resultado: ${numeroFinal}`);
             return;
         }
@@ -352,7 +357,7 @@
                 intervalo.maximo,
             );
             resultado.textContent = String(numeroFinal);
-         
+
             definirDica(`Resultado: ${numeroFinal}`);
             return;
         }
@@ -413,7 +418,7 @@
 
     function parar() {
         if (!estaRodando) return;
-        
+
         definirRodando(false);
 
         setInputsBloqueados(false);
@@ -435,15 +440,40 @@
         resultado.textContent = numeroFinal;
         resultado.classList.add("numero-final-animado");
 
+        botaoCopiar.classList.remove("numero-final-animado");
+
+        if (botaoCopiar) {
+            botaoCopiar.style.display = "flex";
+        }
+
+        botaoCopiar.classList.add("numero-final-animado");
+
         // SALVAR NO HISTÓRICO
         listaHistorico.unshift(numeroFinal);
         atualizarHistorico();
+    }
 
+   
+    if (botaoCopiar) {
+        botaoCopiar.addEventListener("click", () => {
+          
+            const textoParaCopiar = resultado.innerText;
 
+            navigator.clipboard.writeText(textoParaCopiar).then(() => {
+                const textoOriginal =
+                    (botaoCopiar.innerHTML = `<i class="icon-copy"></i> <span class="span-sortear">Copiar</span>`); 
+                botaoCopiar.innerHTML = `<i class="icon-check"></i> <span class="span-sortear">Copiado</span>`;
+
+               
+                setTimeout(() => {
+                    botaoCopiar.innerHTML = textoOriginal;
+                }, 1000);
+            });
+        });
     }
 
     function resetar() {
-        // LIMPAR HISTÓRICO
+      
         listaHistorico = [];
         atualizarHistorico();
     }
