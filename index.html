@@ -59,13 +59,14 @@
                                 type="radio"
                                 name="modo"
                                 id="automatico"
+                                onkeypress="return event.charCode >= 48"
                                 checked
                             />
                             <i class="icon-zap"></i>
                             <span>Automático</span>
                         </label>
                         <label for="manual">
-                            <input type="radio" name="modo" id="manual" />
+                            <input type="radio" name="modo" id="manual"  onkeypress="return event.charCode >= 48" />
                             <i class="icon-hand"></i>
                             <span>Manual</span>
                         </label>
@@ -111,7 +112,7 @@
                         ></button>
                     </div>
 
-                    <div class="botao">
+                    <div class="botao" id="container-copiar" style="display: none;">
                         <button
                             class="button-copy"
                             id="button-Copy"

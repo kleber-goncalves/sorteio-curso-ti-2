@@ -18,6 +18,7 @@
     const fecharModal = document.querySelector("#fecharModal");
     const limparHistorico = document.querySelector("#limparHistorico");
     const botaoCopiar = document.querySelector("#button-Copy");
+    const containerCopiar = document.querySelector("#container-copiar");
 
     const erroMinimo = document.getElementById("erroMinimo");
     const erroMaximo = document.getElementById("erroMaximo");
@@ -253,9 +254,9 @@
                     : "NÚMERO SORTEADO";
             }
 
-             if (botaoCopiar) {
-                 botaoCopiar.style.display = "none"; // Ou "inline-block" conforme o teu design
-             }
+            if (containerCopiar) {
+                containerCopiar.style.display = "none"; // Ou "inline-block" conforme o teu design
+            }
 
             if (modoSorteio === "manual") {
                 if (estaRodando) {
@@ -442,8 +443,8 @@
 
         botaoCopiar.classList.remove("numero-final-animado");
 
-        if (botaoCopiar) {
-            botaoCopiar.style.display = "flex";
+        if (containerCopiar) {
+            containerCopiar.style.display = "flex";
         }
 
         botaoCopiar.classList.add("numero-final-animado");
