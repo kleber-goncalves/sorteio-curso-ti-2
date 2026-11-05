@@ -1,6 +1,13 @@
-(() => {
-    const CHAVE_CONFIGURACAO = "configuracaoSorteio";
+import {
+    carregarConfiguracaoTemporaria,
+    salvarConfiguracaoTemporaria,
+} from "./armazenamento-configuracao.js";
+import {
+    analisarInteiroSeguro,
+    normalizarFaixasExcluidas,
+} from "./regras-sorteio.js";
 
+(() => {
     const campoInicioFaixa = document.getElementById("inicioFaixa");
     const campoFimFaixa = document.getElementById("fimFaixa");
     const botaoAdicionarFaixa = document.getElementById("adicionarFaixa");
@@ -13,65 +20,6 @@
     const quantidadeExcluida = document.getElementById("quantidadeExcluida");
     const quantidadeElegivel = document.getElementById("quantidadeElegivel");
     const totalFaixas = document.getElementById("totalFaixas");
-
-    function carregarConfiguracaoTemporaria() {
-        try {
-            const dadosArmazenados = sessionStorage.getItem(CHAVE_CONFIGURACAO);
-            if (!dadosArmazenados) return null;
-
-            const dados = JSON.parse(dadosArmazenados);
-
-            if (
-                !Number.isSafeInteger(dados.minimo) ||
-                !Number.isSafeInteger(dados.maximo) ||
-                dados.minimo >= dados.maximo ||
-                dados.maximo - dados.minimo + 1 > 2 ** 32 ||
-                !Array.isArray(dados.faixasExcluidas)
-            ) {
-                return null;
-            }
-
-            return dados;
-        } catch {
-            return null;
-        }
-    }
-
-    function analisarInteiro(valor) {
-        const texto = valor.trim();
-
-        if (texto === "" || !/^-?\d+$/.test(texto)) {
-            return null;
-        }
-
-        const numero = Number(texto);
-        return Number.isSafeInteger(numero) ? numero : null;
-    }
-
-    function normalizarFaixasExcluidas(faixas) {
-        const faixasOrdenadas = faixas
-            .map((faixa) => ({ de: faixa.de, ate: faixa.ate }))
-            .sort((primeira, segunda) => primeira.de - segunda.de);
-
-        const faixasNormalizadas = [];
-
-        for (const faixa of faixasOrdenadas) {
-            const ultimaFaixa = faixasNormalizadas[faixasNormalizadas.length - 1];
-
-            if (
-                ultimaFaixa &&
-                (faixa.de <= ultimaFaixa.ate ||
-                    (ultimaFaixa.ate < Number.MAX_SAFE_INTEGER &&
-                        faixa.de === ultimaFaixa.ate + 1))
-            ) {
-                ultimaFaixa.ate = Math.max(ultimaFaixa.ate, faixa.ate);
-            } else {
-                faixasNormalizadas.push({ ...faixa });
-            }
-        }
-
-        return faixasNormalizadas;
-    }
 
     function exibirDica(mensagem, tipo = "") {
         dicaConfiguracao.textContent = mensagem;
@@ -133,15 +81,12 @@
         return true;
     }
 
-    function salvarConfiguracaoTemporaria() {
-        sessionStorage.setItem(
-            CHAVE_CONFIGURACAO,
-            JSON.stringify({
-                minimo: configuracaoSorteio.minimo,
-                maximo: configuracaoSorteio.maximo,
-                faixasExcluidas,
-            }),
-        );
+    function salvarConfiguracaoAtual() {
+        salvarConfiguracaoTemporaria({
+            minimo: configuracaoSorteio.minimo,
+            maximo: configuracaoSorteio.maximo,
+            faixasExcluidas,
+        });
     }
 
     function renderizarFaixasExcluidas() {
@@ -198,8 +143,8 @@
     }
 
     function adicionarFaixaExcluida() {
-        const de = analisarInteiro(campoInicioFaixa.value);
-        const ate = analisarInteiro(campoFimFaixa.value);
+        const de = analisarInteiroSeguro(campoInicioFaixa.value);
+        const ate = analisarInteiroSeguro(campoFimFaixa.value);
 
         if (de === null || ate === null) {
             exibirDica("Informe números inteiros válidos nos dois campos.", "erro");
@@ -235,7 +180,7 @@
             { de, ate },
         ]);
 
-        salvarConfiguracaoTemporaria();
+        salvarConfiguracaoAtual();
         campoInicioFaixa.value = "";
         campoFimFaixa.value = "";
         exibirDica("Faixa adicionada à configuração.", "sucesso");
@@ -247,7 +192,7 @@
             (_, posicao) => posicao !== indice,
         );
 
-        salvarConfiguracaoTemporaria();
+        salvarConfiguracaoAtual();
         exibirDica("Faixa removida.", "sucesso");
         renderizarFaixasExcluidas();
     }
@@ -281,7 +226,7 @@
 
         try {
             faixasExcluidas = normalizarFaixasExcluidas(faixasExcluidas);
-            salvarConfiguracaoTemporaria();
+            salvarConfiguracaoAtual();
             window.location.href = "./index.html";
         } catch {
             exibirDica("Não foi possível salvar a configuração.", "erro");
