@@ -73,10 +73,11 @@ sorteio-curso-ti-2/
 ├── style.css           # Estilos principais do site
 ├── responsivo.css      # Ajustes de responsividade por dispositivo
 ├── configuracao.html  # Página de configuração das faixas excluídas
-├── configuracao.js    # Interface da página de configuração
-├── script.js          # Interface e execução do sorteio
-├── regras-sorteio.js  # Regras, validações e seleção dos números
-├── armazenamento-configuracao.js # Persistência das configurações
+├── js/                 # Módulos JavaScript da aplicação
+│   ├── script.js       # Interface e execução do sorteio
+│   ├── configuracao.js # Interface da página de configuração
+│   ├── regras-sorteio.js # Regras, validações e seleção dos números
+│   └── armazenamento-configuracao.js # Persistência das configurações
 ├── testes/             # Testes automatizados
 ├── package.json        # Comando de testes (sem dependências externas)
 ├── README.md           # Documentação do projeto
