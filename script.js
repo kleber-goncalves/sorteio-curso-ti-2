@@ -3,6 +3,11 @@ import {
     sortearNumeroElegivel,
 } from "./regras-sorteio.js";
 
+import {
+    carregarConfiguracaoTemporaria,
+    salvarConfiguracaoTemporaria,
+} from "./armazenamento-configuracao.js";
+
 (() => {
     const conteiner = document.querySelector(".container");
     const resultado = document.getElementById("resultado");
@@ -26,7 +31,6 @@ import {
     const botaoCopiar = document.querySelector("#button-Copy");
     const containerCopiar = document.querySelector("#container-copiar");
     const botaoAbrirConfiguracao = document.getElementById("abrirConfiguracao");
-    const CHAVE_CONFIGURACAO = "configuracaoSorteio";
 
     const erroMinimo = document.getElementById("erroMinimo");
     const erroMaximo = document.getElementById("erroMaximo");
@@ -47,32 +51,12 @@ import {
     const LIMITE_HISTORICO = 10;
 
 
-    function carregarConfiguracaoTemporaria() {
-        try {
-            const dadosArmazenados = sessionStorage.getItem(CHAVE_CONFIGURACAO);
-            if (!dadosArmazenados) return null;
-
-            const dados = JSON.parse(dadosArmazenados);
-
-            if (
-                !Number.isSafeInteger(dados.minimo) ||
-                !Number.isSafeInteger(dados.maximo) ||
-                dados.minimo >= dados.maximo ||
-                dados.maximo - dados.minimo + 1 > 2 ** 32 ||
-                !Array.isArray(dados.faixasExcluidas)
-            ) {
-                return null;
-            }
-
-            inputMinimo.value = String(dados.minimo);
-            inputMaximo.value = String(dados.maximo);
-            return dados;
-        } catch {
-            return null;
-        }
-    }
-
     let configuracaoSorteio = carregarConfiguracaoTemporaria();
+
+    if (configuracaoSorteio) {
+        inputMinimo.value = String(configuracaoSorteio.minimo);
+        inputMaximo.value = String(configuracaoSorteio.maximo);
+    }
     let faixasExcluidas = configuracaoSorteio?.faixasExcluidas ?? [];
 
     function atualizarBotaoConfiguracao() {
@@ -690,10 +674,7 @@ import {
                     faixasExcluidas,
                 };
 
-                sessionStorage.setItem(
-                    CHAVE_CONFIGURACAO,
-                    JSON.stringify(configuracaoSorteio),
-                );
+                salvarConfiguracaoTemporaria(configuracaoSorteio);
 
                 window.location.href = "./configuracao.html";
             } catch {
