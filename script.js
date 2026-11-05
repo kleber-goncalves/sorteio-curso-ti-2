@@ -16,6 +16,7 @@
     const modal = document.querySelector("#modal");
     const abriModal = document.querySelector("#abrirModal");
     const fecharModal = document.querySelector("#fecharModal");
+    const dicaModal = document.getElementById("dicaModal");
     const limparHistorico = document.querySelector("#limparHistorico");
     const botaoCopiar = document.querySelector("#button-Copy");
     const containerCopiar = document.querySelector("#container-copiar");
@@ -136,6 +137,17 @@
         dica.style.color = tipo === "erro" ? "red" : "green";
         if (tipo) dica.dataset.tipo = tipo;
         else delete dica.dataset.tipo;
+    }
+
+    function definirDicaModal(mensagem = "", tipo = "") {
+        if (!dicaModal) {
+            definirDica(mensagem, tipo);
+            return;
+        }
+
+        dicaModal.textContent = mensagem;
+        if (tipo) dicaModal.dataset.tipo = tipo;
+        else delete dicaModal.dataset.tipo;
     }
 
     function analisarEntrada(valor) {
@@ -812,15 +824,16 @@
     if (botaoAbrirConfiguracao) {
         botaoAbrirConfiguracao.addEventListener("click", (evento) => {
             evento.preventDefault();
+            definirDicaModal();
 
             if (estaRodando) {
-                definirDica("Finalize o sorteio antes de alterar as exclusões.", "erro");
+                definirDicaModal("Finalize o sorteio antes de alterar as exclusões.", "erro");
                 return;
             }
 
             const intervalo = lerIntervalo();
             if (!intervalo.ok) {
-                definirDica(intervalo.mensagem, "erro");
+                definirDicaModal(intervalo.mensagem, "erro");
                 return;
             }
 
@@ -838,19 +851,28 @@
 
                 window.location.href = "./configuracao.html";
             } catch {
-                definirDica("Não foi possível guardar a configuração temporária neste navegador.", "erro");
+                definirDicaModal("Não foi possível guardar a configuração temporária neste navegador.", "erro");
             }
         });
     }
 
     window.addEventListener("keydown", (evento) => {
         if (evento.key === "Enter" && !evento.repeat) {
+            // O Enter dentro do modal deve acionar o link ou botão em foco,
+            // sem iniciar o sorteio em segundo plano.
+            if (modal?.open) return;
+
             if (estaRodando) parar();
             else comecar();
         }
+
         if (evento.key === "Escape") {
-            if (!overlayCriador?.hidden) fecharModalCriador();
-            else resetar();
+            if (modal?.open) {
+                modal.close();
+                return;
+            }
+
+            resetar();
         }
     });
 
