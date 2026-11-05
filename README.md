@@ -20,6 +20,7 @@ Sorteio II é uma página interativa para sortear números em dois modos: **auto
   - **Automático**: rolagem automática até o número final.
   - **Manual**: inicia o sorteio e permite parar quando quiser.
 - **Intervalo customizável**: informe `mínimo` e `máximo` para o sorteio.
+- **Faixas de exclusão**: configure várias faixas de números que não participarão do sorteio. As configurações ficam temporariamente no navegador durante a sessão.
 - **Histórico de resultados**: os últimos números sorteados são exibidos.
 - **Modal do criador**: informações do autor e links para redes sociais.
 - **Responsividade**: layout adaptado para diferentes tamanhos de tela.
@@ -42,6 +43,10 @@ Sorteio II é uma página interativa para sortear números em dois modos: **auto
 
 2. Abra o arquivo `index.html` no navegador.
 
+3. Informe o intervalo mínimo e máximo. Use **Configurar exclusões** para adicionar faixas com os campos **De** e **Até** e, depois, aplique a configuração para voltar ao sorteio.
+
+> As faixas são mantidas em `sessionStorage` na mesma aba do navegador e são descartadas ao encerrar a sessão da aba.
+
 > Esta é uma aplicação estática: não é necessário servidor nem dependências.
 
 ## 📁 Estrutura do projeto
@@ -51,6 +56,8 @@ sorteio-curso-ti-2/
 ├── index.html          # Página principal
 ├── style.css           # Estilos principais do site
 ├── responsivo.css      # Ajustes de responsividade por dispositivo
+├── configuracao.html  # Página de configuração das faixas excluídas
+├── configuracao.js    # Gerenciamento temporário das exclusões
 ├── script.js           # Lógica do sorteio e interatividade
 ├── README.md           # Documentação do projeto
 ├── img/                # Imagens e ícones
