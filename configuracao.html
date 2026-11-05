@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Configure as faixas de números que não participarão do sorteio."
+        />
+        <link rel="icon" type="image/png" href="favicon-32x32.png" />
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="responsivo.css" />
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/lucide-static@latest/font/lucide.css"
+        />
+        <title>Configuração do sorteio | Sorteio II</title>
+    </head>
+    <body class="pagina-configuracao">
+        <header class="cabecalho cabecalho-configuracao nao-selecionavel">
+            <nav class="nav">
+                <div class="logo">
+                    <p>Sorteador II</p>
+                </div>
+                <a class="botao-voltar" href="./index.html" id="voltarSorteio">
+                    <i class="icon-arrow-left"></i>
+                    <span>Voltar ao sorteio</span>
+                </a>
+            </nav>
+            <div>
+                <h1 class="txt">Configurar <span>exclusões</span>.</h1>
+            </div>
+        </header>
+
+        <main class="container configuracao-container nao-selecionavel">
+            <section class="centro-meio configuracao">
+                <div class="configuracao__introducao">
+                    <p class="configuracao__rotulo">CONFIGURAÇÃO DO SORTEIO</p>
+                    <p class="configuracao__descricao">
+                        Adicione faixas de números que não participarão deste sorteio.
+                        Você pode incluir quantas faixas forem necessárias.
+                    </p>
+                </div>
+
+                <div class="resumo-exclusoes" aria-live="polite">
+                    <div class="resumo-exclusoes__intervalo">
+                        <span>Intervalo do sorteio</span>
+                        <strong id="intervaloConfigurado">Não definido</strong>
+                    </div>
+                    <div class="resumo-exclusoes__quantidades">
+                        <div>
+                            <strong id="quantidadeExcluida">0</strong>
+                            <span>Números excluídos</span>
+                        </div>
+                        <div>
+                            <strong id="quantidadeElegivel">0</strong>
+                            <span>Números elegíveis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <fieldset class="configuracao__campos" id="camposConfiguracao">
+                    <legend>Adicionar faixa de exclusão</legend>
+
+                    <div class="intervalo faixa-exclusao__campos">
+                        <div>
+                            <label for="inicioFaixa">De</label>
+                            <input
+                                type="text"
+                                inputmode="decimal"
+                                name="inicioFaixa"
+                                id="inicioFaixa"
+                                autocomplete="off"
+                                placeholder="Ex.: 20"
+                            />
+                        </div>
+                        <div>
+                            <label for="fimFaixa">Até</label>
+                            <input
+                                type="text"
+                                inputmode="decimal"
+                                name="fimFaixa"
+                                id="fimFaixa"
+                                autocomplete="off"
+                                placeholder="Ex.: 40"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="configuracao__adicionar">
+                        <button
+                            class="button-bg-base"
+                            id="adicionarFaixa"
+                            type="button"
+                        >
+                            <i class="icon-plus"></i>
+                            Adicionar faixa
+                        </button>
+                    </div>
+                </fieldset>
+
+                <div class="lista-faixas">
+                    <div class="lista-faixas__cabecalho">
+                        <p>FAIXAS EXCLUÍDAS</p>
+                        <span id="totalFaixas">0 faixas</span>
+                    </div>
+                    <ul class="lista-faixas-excluidas" id="listaFaixasExcluidas"></ul>
+                    <p class="lista-faixas__vazia" id="listaVazia">
+                        Nenhuma faixa adicionada.
+                    </p>
+                </div>
+
+                <p class="dica configuracao__dica" id="dicaConfiguracao" aria-live="polite"></p>
+
+                <div class="configuracao__acoes">
+                    <a class="botao-voltar configuracao__acao-voltar" href="./index.html">
+                        Voltar ao sorteio
+                    </a>
+                    <div class="botao configuracao__acao-aplicar">
+                        <button
+                            class="button-bg-base"
+                            id="aplicarConfiguracao"
+                            type="button"
+                            disabled
+                        >
+                            <i class="icon-check"></i>
+                            Aplicar configuração
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <script src="configuracao.js"></script>
+    </body>
+</html>
