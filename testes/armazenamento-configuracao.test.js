@@ -4,7 +4,7 @@ import test, { beforeEach } from "node:test";
 import {
     carregarConfiguracaoTemporaria,
     salvarConfiguracaoTemporaria,
-} from "../armazenamento-configuracao.js";
+} from "../js/armazenamento-configuracao.js";
 
 const dadosArmazenados = new Map();
 

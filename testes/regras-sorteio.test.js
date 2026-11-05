@@ -8,7 +8,7 @@ import {
     normalizarFaixasExcluidas,
     sortearNumeroElegivel,
     validarFaixasExcluidas,
-} from "../regras-sorteio.js";
+} from "../js/regras-sorteio.js";
 
 test("analisarInteiroSeguro aceita inteiros seguros", () => {
     assert.equal(analisarInteiroSeguro("42"), 42);

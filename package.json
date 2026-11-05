@@ -6,7 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "check": "node --check script.js && node --check configuracao.js && node --check regras-sorteio.js && node --check armazenamento-configuracao.js",
+    "check": "node --check js/script.js && node --check js/configuracao.js && node --check js/regras-sorteio.js && node --check js/armazenamento-configuracao.js",
     "test": "node --test && npm run check"
   }
 }
