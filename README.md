@@ -20,6 +20,7 @@ Sorteio II é uma página interativa para sortear números em dois modos: **auto
   - **Automático**: rolagem automática até o número final.
   - **Manual**: inicia o sorteio e permite parar quando quiser.
 - **Intervalo customizável**: informe `mínimo` e `máximo` para o sorteio.
+- **Faixas de exclusão**: configure várias faixas de números que não participarão do sorteio. As configurações ficam temporariamente no navegador durante a sessão.
 - **Histórico de resultados**: os últimos números sorteados são exibidos.
 - **Modal do criador**: informações do autor e links para redes sociais.
 - **Responsividade**: layout adaptado para diferentes tamanhos de tela.
@@ -40,9 +41,29 @@ Sorteio II é uma página interativa para sortear números em dois modos: **auto
     cd sorteio-curso-ti-2
     ```
 
-2. Abra o arquivo `index.html` no navegador.
+2. Abra a pasta do projeto no VS Code e inicie um servidor HTTP local. Você pode usar a extensão **Live Server** ou, caso tenha Python instalado, executar:
 
-> Esta é uma aplicação estática: não é necessário servidor nem dependências.
+    ```bash
+    python -m http.server 5500
+    ```
+
+3. Acesse `http://localhost:5500` no navegador.
+
+4. Informe o intervalo mínimo e máximo. Use **Configurar exclusões** para adicionar faixas com os campos **De** e **Até** e, depois, aplique a configuração para voltar ao sorteio.
+
+> As páginas utilizam módulos JavaScript nativos (`import`/`export`). Por isso, execute o projeto por um servidor HTTP local; abrir o arquivo diretamente pelo endereço `file://` pode bloquear o carregamento dos módulos.
+
+> As faixas são mantidas em `sessionStorage` na mesma aba do navegador e são descartadas ao encerrar a sessão da aba.
+
+### Testes automatizados
+
+O projeto utiliza o executor de testes nativo do Node.js, sem bibliotecas adicionais. Com Node.js 22 ou superior, execute:
+
+    ```bash
+    npm test
+    ```
+
+Os testes cobrem as regras de números elegíveis, normalização das faixas, geração de números e armazenamento temporário.
 
 ## 📁 Estrutura do projeto
 
@@ -51,7 +72,14 @@ sorteio-curso-ti-2/
 ├── index.html          # Página principal
 ├── style.css           # Estilos principais do site
 ├── responsivo.css      # Ajustes de responsividade por dispositivo
-├── script.js           # Lógica do sorteio e interatividade
+├── configuracao.html  # Página de configuração das faixas excluídas
+├── js/                 # Módulos JavaScript da aplicação
+│   ├── script.js       # Interface e execução do sorteio
+│   ├── configuracao.js # Interface da página de configuração
+│   ├── regras-sorteio.js # Regras, validações e seleção dos números
+│   └── armazenamento-configuracao.js # Persistência das configurações
+├── testes/             # Testes automatizados
+├── package.json        # Comando de testes (sem dependências externas)
 ├── README.md           # Documentação do projeto
 ├── img/                # Imagens e ícones
 └── font/               # Fontes customizadas

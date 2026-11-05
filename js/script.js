@@ -1,3 +1,13 @@
+import {
+    validarFaixasExcluidas,
+    sortearNumeroElegivel,
+} from "./regras-sorteio.js";
+
+import {
+    carregarConfiguracaoTemporaria,
+    salvarConfiguracaoTemporaria,
+} from "./armazenamento-configuracao.js";
+
 (() => {
     const conteiner = document.querySelector(".container");
     const resultado = document.getElementById("resultado");
@@ -16,9 +26,11 @@
     const modal = document.querySelector("#modal");
     const abriModal = document.querySelector("#abrirModal");
     const fecharModal = document.querySelector("#fecharModal");
+    const dicaModal = document.getElementById("dicaModal");
     const limparHistorico = document.querySelector("#limparHistorico");
     const botaoCopiar = document.querySelector("#button-Copy");
     const containerCopiar = document.querySelector("#container-copiar");
+    const botaoAbrirConfiguracao = document.getElementById("abrirConfiguracao");
 
     const erroMinimo = document.getElementById("erroMinimo");
     const erroMaximo = document.getElementById("erroMaximo");
@@ -37,6 +49,29 @@
     let listaHistorico = [];
     // Limita o tamanho do histórico ex: 10 numeros
     const LIMITE_HISTORICO = 10;
+
+
+    let configuracaoSorteio = carregarConfiguracaoTemporaria();
+
+    if (configuracaoSorteio) {
+        inputMinimo.value = String(configuracaoSorteio.minimo);
+        inputMaximo.value = String(configuracaoSorteio.maximo);
+    }
+    let faixasExcluidas = configuracaoSorteio?.faixasExcluidas ?? [];
+
+    function atualizarBotaoConfiguracao() {
+        if (!botaoAbrirConfiguracao) return;
+
+        const textoBotao = botaoAbrirConfiguracao.querySelector("span");
+        if (!textoBotao) return;
+
+        textoBotao.textContent = faixasExcluidas.length
+            ? "Editar exclusões (" + faixasExcluidas.length + ")"
+            : "Configurar exclusões";
+    }
+
+    atualizarBotaoConfiguracao();
+
 
     function atualizarHistorico() {
         if (!historico) return;
@@ -91,6 +126,17 @@
         dica.style.color = tipo === "erro" ? "red" : "green";
         if (tipo) dica.dataset.tipo = tipo;
         else delete dica.dataset.tipo;
+    }
+
+    function definirDicaModal(mensagem = "", tipo = "") {
+        if (!dicaModal) {
+            definirDica(mensagem, tipo);
+            return;
+        }
+
+        dicaModal.textContent = mensagem;
+        if (tipo) dicaModal.dataset.tipo = tipo;
+        else delete dicaModal.dataset.tipo;
     }
 
     function analisarEntrada(valor) {
@@ -201,6 +247,20 @@
             };
         }
 
+        if (!Number.isSafeInteger(minimo) || !Number.isSafeInteger(maximo)) {
+            return {
+                ok: false,
+                mensagem: "MÍN e MÁX precisam ser números inteiros seguros.",
+            };
+        }
+
+        if (maximo - minimo + 1 > 2 ** 32) {
+            return {
+                ok: false,
+                mensagem: "O intervalo não pode ultrapassar 4.294.967.296 números.",
+            };
+        }
+
         // Tudo certo
         return {
             ok: true,
@@ -209,26 +269,6 @@
         };
     }
 
-    function inteiroAleatorioInclusivo(minimo, maximo) {
-        const amplitude = maximo - minimo + 1;
-        if (amplitude <= 0) throw new Error("Intervalo inválido");
-
-        const cripto = window.crypto ?? window.msCrypto;
-        if (!cripto?.getRandomValues) {
-            return minimo + Math.floor(Math.random() * amplitude);
-        }
-
-        const maxUint32MaisUm = 2 ** 32;
-        const limite = Math.floor(maxUint32MaisUm / amplitude) * amplitude;
-        const bufferUint32 = new Uint32Array(1);
-        let valor = 0;
-        do {
-            cripto.getRandomValues(bufferUint32);
-            valor = bufferUint32[0];
-        } while (valor >= limite);
-
-        return minimo + (valor % amplitude);
-    }
 
     function setInputsBloqueados(bloquear) {
         inputMinimo.disabled = bloquear;
@@ -273,7 +313,6 @@
                 if (estaRodando) {
                     botaoComecar.classList.remove("button-bg-base");
                     botaoComecar.classList.add("button-bg-rodando-auto");
-                    botaoComecar.style.cursor = "not-allowed";
                 } else {
                     botaoComecar.classList.remove("button-bg-rodando-auto");
                     botaoComecar.classList.add("button-bg-base");
@@ -313,13 +352,16 @@
             return;
         }
 
+        const validacaoFaixas = validarFaixasExcluidas(faixasExcluidas, intervalo);
+        if (!validacaoFaixas.ok) {
+            definirDica(validacaoFaixas.mensagem, "erro");
+            return;
+        }
+
         definirDica("");
 
         if (mediaMovimentoReduzido?.matches) {
-            const numeroFinal = inteiroAleatorioInclusivo(
-                intervalo.minimo,
-                intervalo.maximo,
-            );
+            const numeroFinal = sortearNumeroElegivel(faixasExcluidas, intervalo);
             resultado.textContent = String(numeroFinal);
 
             definirDica(`Resultado: ${numeroFinal}`);
@@ -335,10 +377,7 @@
             if (!intervaloAtual.ok) return;
             resultado.setAttribute("data-antigo", resultado.textContent);
             resultado.textContent = String(
-                inteiroAleatorioInclusivo(
-                    intervaloAtual.minimo,
-                    intervaloAtual.maximo,
-                ),
+                sortearNumeroElegivel(faixasExcluidas, intervaloAtual),
             );
         }, 60);
     }
@@ -350,13 +389,16 @@
             return;
         }
 
+        const validacaoFaixas = validarFaixasExcluidas(faixasExcluidas, intervalo);
+        if (!validacaoFaixas.ok) {
+            definirDica(validacaoFaixas.mensagem, "erro");
+            return;
+        }
+
         definirDica("");
 
         if (mediaMovimentoReduzido?.matches) {
-            const numeroFinal = inteiroAleatorioInclusivo(
-                intervalo.minimo,
-                intervalo.maximo,
-            );
+            const numeroFinal = sortearNumeroElegivel(faixasExcluidas, intervalo);
             resultado.textContent = String(numeroFinal);
 
             definirDica(`Resultado: ${numeroFinal}`);
@@ -392,10 +434,7 @@
                     );
 
                     resultado.textContent = String(
-                        inteiroAleatorioInclusivo(
-                            intervaloAtual.minimo,
-                            intervaloAtual.maximo,
-                        ),
+                        sortearNumeroElegivel(faixasExcluidas, intervaloAtual),
                     );
                 }
                 proximaAtualizacaoEm = agora + intervaloMs;
@@ -433,10 +472,7 @@
 
         resultado.classList.remove("numero-final-animado");
         void resultado.offsetWidth;
-        const numeroFinal = inteiroAleatorioInclusivo(
-            intervalo.minimo,
-            intervalo.maximo,
-        );
+        const numeroFinal = sortearNumeroElegivel(faixasExcluidas, intervalo);
 
         resultado.textContent = numeroFinal;
         resultado.classList.add("numero-final-animado");
@@ -614,14 +650,56 @@
         inputMaximo.value = inputMaximo.value.replace(/[^\d-]/g, "");
     });
 
+    if (botaoAbrirConfiguracao) {
+        botaoAbrirConfiguracao.addEventListener("click", (evento) => {
+            evento.preventDefault();
+            definirDicaModal();
+
+            if (estaRodando) {
+                definirDicaModal("Finalize o sorteio antes de alterar as exclusões.", "erro");
+                return;
+            }
+
+            const intervalo = lerIntervalo();
+            if (!intervalo.ok) {
+                definirDicaModal(intervalo.mensagem, "erro");
+                return;
+            }
+
+            try {
+                configuracaoSorteio = {
+                    minimo: intervalo.minimo,
+                    maximo: intervalo.maximo,
+                    faixasExcluidas,
+                };
+
+                salvarConfiguracaoTemporaria(configuracaoSorteio);
+
+                window.location.href = "./configuracao.html";
+            } catch {
+                definirDicaModal("Não foi possível guardar a configuração temporária neste navegador.", "erro");
+            }
+        });
+    }
+
     window.addEventListener("keydown", (evento) => {
         if (evento.key === "Enter" && !evento.repeat) {
+            // O Enter dentro do modal deve acionar o link ou botão em foco,
+            // sem iniciar o sorteio em segundo plano.
+            if (modal?.open) return;
+
             if (estaRodando) parar();
             else comecar();
         }
+
         if (evento.key === "Escape") {
-            if (!overlayCriador?.hidden) fecharModalCriador();
-            else resetar();
+            if (modal?.open) {
+                evento.preventDefault();
+                modal.close();
+                return;
+            }
+
+            resetar();
         }
     });
 

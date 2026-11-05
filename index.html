@@ -150,7 +150,7 @@
                 <button id="fecharModal" type="button">X</button>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 46px">
+            <div class="modal-conteudo">
                 <div class="modal-cabecalho">
                     <img
                         id="modal-img"
@@ -285,9 +285,26 @@
                         <i class="icon-move-up-right"></i>
                     </a>
                 </nav>
+
+                <div class="modal-acoes">
+                    <a
+                        class="botao-configuracao"
+                        id="abrirConfiguracao"
+                        href="./configuracao.html"
+                    >
+                        <i class="icon-sliders-horizontal"></i>
+                        <span>Configurar exclusões</span>
+                    </a>
+                    <p
+                        class="dica-modal"
+                        id="dicaModal"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
+                </div>
             </div>
         </dialog>
 
-        <script src="script.js"></script>
+        <script type="module" src="./js/script.js"></script>
     </body>
 </html>
