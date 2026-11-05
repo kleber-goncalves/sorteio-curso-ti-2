@@ -1207,3 +1207,46 @@ html.pagina-configuracao {
     overflow-y: auto;
 }
 
+
+
+/* Ações e mensagens do modal do criador */
+.modal-conteudo {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.modal-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.modal-acoes .botao-configuracao {
+    min-height: 44px;
+}
+
+.dica-modal {
+    margin: 0;
+    color: var(--cor-secundario);
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.dica-modal:empty {
+    display: none;
+}
+
+.dica-modal[data-tipo="erro"] {
+    color: #ff7770;
+}
+
+.dica-modal[data-tipo="sucesso"] {
+    color: var(--cor-primario);
+}
+
+#modal {
+    max-height: min(90dvh, 760px);
+    overflow-y: auto;
+}
