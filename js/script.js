@@ -313,7 +313,6 @@ import {
                 if (estaRodando) {
                     botaoComecar.classList.remove("button-bg-base");
                     botaoComecar.classList.add("button-bg-rodando-auto");
-                    botaoComecar.style.cursor = "not-allowed";
                 } else {
                     botaoComecar.classList.remove("button-bg-rodando-auto");
                     botaoComecar.classList.add("button-bg-base");

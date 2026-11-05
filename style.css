@@ -586,6 +586,7 @@ button.button-bg-rodando-auto {
          rgb(138, 164, 43) 0%,
          rgb(121, 142, 46) 100%
     ) !important;
+    cursor: not-allowed;
 }
 
 .botao .button-copy {
