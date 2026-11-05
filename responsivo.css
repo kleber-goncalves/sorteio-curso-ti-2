@@ -233,7 +233,7 @@
     }
 
     .botao {
-        width: 100%;
+        width: 50%;
         max-width: 100%;
     }
 
@@ -243,13 +243,15 @@
         font-size: 15px;
     }
 
+
+
     .historico {
         gap: 8px;
         flex-wrap: wrap;
     }
 
     .historico span {
-        width: 36px;
+        width: fit-content;
         height: 28px;
         font-size: 11px;
     }
@@ -327,11 +329,12 @@
 
     .historico {
         gap: 6px;
+        flex-wrap: wrap;
     }
 
     .historico span {
-        width: 32px;
-        height: 26px;
+        width: fit-content;
+        height: 30px;
         font-size: 10px;
     }
 
