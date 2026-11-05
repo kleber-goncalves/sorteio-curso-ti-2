@@ -364,3 +364,69 @@
         font-size: 11px;
     }
 }
+
+
+/* Página de configuração de exclusões */
+@media (max-width: 599px) {
+    body.pagina-configuracao {
+        padding: 0 10px 24px;
+    }
+
+    .cabecalho-configuracao {
+        gap: 12px;
+    }
+
+    .cabecalho-configuracao .nav {
+        margin-top: 8%;
+        margin-bottom: 8%;
+    }
+
+    .cabecalho-configuracao .txt {
+        margin-bottom: 8%;
+        font-size: clamp(29px, 9.5vw, 38px);
+    }
+
+    .configuracao-container {
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    .configuracao {
+        padding: 18px 14px;
+        gap: 16px;
+    }
+
+    .resumo-exclusoes {
+        padding: 14px;
+    }
+
+    .resumo-exclusoes__intervalo {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .configuracao__campos {
+        padding: 14px 12px;
+    }
+
+    .configuracao__adicionar button {
+        width: 100%;
+    }
+
+    .configuracao__acoes {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .configuracao__acao-voltar,
+    .configuracao__acao-aplicar,
+    .configuracao__acao-aplicar button {
+        width: 100%;
+    }
+
+    .faixa-excluida {
+        align-items: flex-start;
+    }
+}
+
