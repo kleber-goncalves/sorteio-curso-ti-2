@@ -1,0 +1,11 @@
+{
+  "name": "sorteio-curso-ti-2",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
