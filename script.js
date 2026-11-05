@@ -868,6 +868,7 @@
 
         if (evento.key === "Escape") {
             if (modal?.open) {
+                evento.preventDefault();
                 modal.close();
                 return;
             }
