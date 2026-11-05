@@ -81,6 +81,8 @@
     function verificarFaixasNoIntervalo(faixas) {
         return faixas.every(
             (faixa) =>
+                faixa !== null &&
+                typeof faixa === "object" &&
                 Number.isSafeInteger(faixa.de) &&
                 Number.isSafeInteger(faixa.ate) &&
                 faixa.de <= faixa.ate &&
@@ -143,31 +145,49 @@
     }
 
     function renderizarFaixasExcluidas() {
-        listaFaixasExcluidas.innerHTML = faixasExcluidas
-            .map((faixa, indice) => {
-                const faixaForaDoIntervalo =
-                    !Number.isSafeInteger(faixa.de) ||
-                    !Number.isSafeInteger(faixa.ate) ||
-                    faixa.de > faixa.ate ||
-                    faixa.de < configuracaoSorteio.minimo ||
-                    faixa.ate > configuracaoSorteio.maximo;
+        listaFaixasExcluidas.replaceChildren();
 
-                return (
-                    '<li class="faixa-excluida ' +
-                    (faixaForaDoIntervalo ? "faixa-excluida--invalida" : "") +
-                    '">' +
-                    "<span>De " + faixa.de + " até " + faixa.ate + "</span>" +
-                    '<button class="botao-remover-faixa" type="button" data-indice="' +
-                    indice +
-                    '" aria-label="Remover faixa de ' +
-                    faixa.de +
-                    " até " +
-                    faixa.ate +
-                    '">' +
-                    '<i class="icon-trash-2"></i> Remover</button></li>'
-                );
-            })
-            .join("");
+        faixasExcluidas.forEach((faixa, indice) => {
+            const faixaValida =
+                faixa !== null &&
+                typeof faixa === "object" &&
+                Number.isSafeInteger(faixa.de) &&
+                Number.isSafeInteger(faixa.ate) &&
+                faixa.de <= faixa.ate &&
+                faixa.de >= configuracaoSorteio.minimo &&
+                faixa.ate <= configuracaoSorteio.maximo;
+
+            const itemFaixa = document.createElement("li");
+            itemFaixa.className = "faixa-excluida";
+            if (!faixaValida) {
+                itemFaixa.classList.add("faixa-excluida--invalida");
+            }
+
+            const textoFaixa = document.createElement("span");
+            textoFaixa.textContent = faixaValida
+                ? "De " + faixa.de + " até " + faixa.ate
+                : "Faixa inválida";
+
+            const botaoRemover = document.createElement("button");
+            botaoRemover.className = "botao-remover-faixa";
+            botaoRemover.type = "button";
+            botaoRemover.dataset.indice = String(indice);
+            botaoRemover.setAttribute(
+                "aria-label",
+                faixaValida
+                    ? "Remover faixa de " + faixa.de + " até " + faixa.ate
+                    : "Remover faixa inválida",
+            );
+
+            const iconeRemover = document.createElement("i");
+            iconeRemover.className = "icon-trash-2";
+            iconeRemover.setAttribute("aria-hidden", "true");
+
+            const textoRemover = document.createTextNode(" Remover");
+            botaoRemover.append(iconeRemover, textoRemover);
+            itemFaixa.append(textoFaixa, botaoRemover);
+            listaFaixasExcluidas.appendChild(itemFaixa);
+        });
 
         listaVazia.hidden = faixasExcluidas.length > 0;
         totalFaixas.textContent =
