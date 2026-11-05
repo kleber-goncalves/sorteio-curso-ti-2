@@ -19,6 +19,8 @@
     const limparHistorico = document.querySelector("#limparHistorico");
     const botaoCopiar = document.querySelector("#button-Copy");
     const containerCopiar = document.querySelector("#container-copiar");
+    const botaoAbrirConfiguracao = document.getElementById("abrirConfiguracao");
+    const CHAVE_CONFIGURACAO = "configuracaoSorteio";
 
     const erroMinimo = document.getElementById("erroMinimo");
     const erroMaximo = document.getElementById("erroMaximo");
@@ -37,6 +39,49 @@
     let listaHistorico = [];
     // Limita o tamanho do histórico ex: 10 numeros
     const LIMITE_HISTORICO = 10;
+
+
+    function carregarConfiguracaoTemporaria() {
+        try {
+            const dadosArmazenados = sessionStorage.getItem(CHAVE_CONFIGURACAO);
+            if (!dadosArmazenados) return null;
+
+            const dados = JSON.parse(dadosArmazenados);
+
+            if (
+                !Number.isSafeInteger(dados.minimo) ||
+                !Number.isSafeInteger(dados.maximo) ||
+                dados.minimo >= dados.maximo ||
+                dados.maximo - dados.minimo + 1 > 2 ** 32 ||
+                !Array.isArray(dados.faixasExcluidas)
+            ) {
+                return null;
+            }
+
+            inputMinimo.value = String(dados.minimo);
+            inputMaximo.value = String(dados.maximo);
+            return dados;
+        } catch {
+            return null;
+        }
+    }
+
+    let configuracaoSorteio = carregarConfiguracaoTemporaria();
+    let faixasExcluidas = configuracaoSorteio?.faixasExcluidas ?? [];
+
+    function atualizarBotaoConfiguracao() {
+        if (!botaoAbrirConfiguracao) return;
+
+        const textoBotao = botaoAbrirConfiguracao.querySelector("span");
+        if (!textoBotao) return;
+
+        textoBotao.textContent = faixasExcluidas.length
+            ? "Editar exclusões (" + faixasExcluidas.length + ")"
+            : "Configurar exclusões";
+    }
+
+    atualizarBotaoConfiguracao();
+
 
     function atualizarHistorico() {
         if (!historico) return;
@@ -201,6 +246,20 @@
             };
         }
 
+        if (!Number.isSafeInteger(minimo) || !Number.isSafeInteger(maximo)) {
+            return {
+                ok: false,
+                mensagem: "MÍN e MÁX precisam ser números inteiros seguros.",
+            };
+        }
+
+        if (maximo - minimo + 1 > 2 ** 32) {
+            return {
+                ok: false,
+                mensagem: "O intervalo não pode ultrapassar 4.294.967.296 números.",
+            };
+        }
+
         // Tudo certo
         return {
             ok: true,
@@ -209,9 +268,148 @@
         };
     }
 
+
+    function normalizarFaixasExcluidas(faixas, intervalo) {
+        if (!Array.isArray(faixas)) {
+            throw new Error("A configuração das faixas excluídas está inválida.");
+        }
+
+        const faixasOrdenadas = faixas
+            .map((faixa) => {
+                if (
+                    !Number.isSafeInteger(faixa?.de) ||
+                    !Number.isSafeInteger(faixa?.ate) ||
+                    faixa.de > faixa.ate
+                ) {
+                    throw new Error("Existe uma faixa de exclusão inválida.");
+                }
+
+                if (
+                    faixa.de < intervalo.minimo ||
+                    faixa.ate > intervalo.maximo
+                ) {
+                    throw new Error(
+                        "Uma faixa excluída está fora do intervalo atual. Revise a configuração.",
+                    );
+                }
+
+                return { de: faixa.de, ate: faixa.ate };
+            })
+            .sort((primeira, segunda) => primeira.de - segunda.de);
+
+        const faixasNormalizadas = [];
+
+        for (const faixa of faixasOrdenadas) {
+            const ultimaFaixa = faixasNormalizadas[faixasNormalizadas.length - 1];
+            const faixasConsecutivas =
+                ultimaFaixa &&
+                ultimaFaixa.ate < Number.MAX_SAFE_INTEGER &&
+                faixa.de === ultimaFaixa.ate + 1;
+
+            if (
+                ultimaFaixa &&
+                (faixa.de <= ultimaFaixa.ate || faixasConsecutivas)
+            ) {
+                ultimaFaixa.ate = Math.max(ultimaFaixa.ate, faixa.ate);
+            } else {
+                faixasNormalizadas.push({ ...faixa });
+            }
+        }
+
+        return faixasNormalizadas;
+    }
+
+    function calcularIntervalosElegiveis(intervalo) {
+        const faixas = normalizarFaixasExcluidas(faixasExcluidas, intervalo);
+        const intervalosElegiveis = [];
+        let proximoNumero = intervalo.minimo;
+        let terminouIntervalo = false;
+
+        for (const faixa of faixas) {
+            if (faixa.de > proximoNumero) {
+                intervalosElegiveis.push({
+                    de: proximoNumero,
+                    ate: faixa.de - 1,
+                });
+            }
+
+            if (faixa.ate >= intervalo.maximo) {
+                terminouIntervalo = true;
+                break;
+            }
+
+            proximoNumero = faixa.ate + 1;
+        }
+
+        if (!terminouIntervalo && proximoNumero <= intervalo.maximo) {
+            intervalosElegiveis.push({
+                de: proximoNumero,
+                ate: intervalo.maximo,
+            });
+        }
+
+        return intervalosElegiveis;
+    }
+
+    function validarFaixasExcluidas(intervalo) {
+        try {
+            const intervalosElegiveis = calcularIntervalosElegiveis(intervalo);
+            const totalElegivel = intervalosElegiveis.reduce(
+                (total, faixa) => total + (faixa.ate - faixa.de + 1),
+                0,
+            );
+
+            if (totalElegivel === 0) {
+                return {
+                    ok: false,
+                    mensagem: "Todas as opções foram excluídas. Mantenha pelo menos um número elegível.",
+                };
+            }
+
+            return { ok: true };
+        } catch (erro) {
+            return {
+                ok: false,
+                mensagem: erro.message || "Não foi possível validar as faixas excluídas.",
+            };
+        }
+    }
+
+    function sortearNumeroElegivel(intervalo) {
+        const intervalosElegiveis = calcularIntervalosElegiveis(intervalo);
+        const totalElegivel = intervalosElegiveis.reduce(
+            (total, faixa) => total + (faixa.ate - faixa.de + 1),
+            0,
+        );
+
+        if (totalElegivel <= 0) {
+            throw new Error("Não existem números elegíveis para este sorteio.");
+        }
+
+        let indiceSorteado = inteiroAleatorioInclusivo(0, totalElegivel - 1);
+
+        for (const faixa of intervalosElegiveis) {
+            const quantidadeNaFaixa = faixa.ate - faixa.de + 1;
+
+            if (indiceSorteado < quantidadeNaFaixa) {
+                return faixa.de + indiceSorteado;
+            }
+
+            indiceSorteado -= quantidadeNaFaixa;
+        }
+
+        throw new Error("Não foi possível selecionar um número elegível.");
+    }
+
     function inteiroAleatorioInclusivo(minimo, maximo) {
         const amplitude = maximo - minimo + 1;
-        if (amplitude <= 0) throw new Error("Intervalo inválido");
+        if (
+            !Number.isSafeInteger(amplitude) ||
+            amplitude <= 0 ||
+            amplitude > 2 ** 32
+        ) {
+            throw new Error("Intervalo inválido ou maior que o limite suportado.");
+        }
 
         const cripto = window.crypto ?? window.msCrypto;
         if (!cripto?.getRandomValues) {
@@ -313,13 +511,16 @@
             return;
         }
 
+        const validacaoFaixas = validarFaixasExcluidas(intervalo);
+        if (!validacaoFaixas.ok) {
+            definirDica(validacaoFaixas.mensagem, "erro");
+            return;
+        }
+
         definirDica("");
 
         if (mediaMovimentoReduzido?.matches) {
-            const numeroFinal = inteiroAleatorioInclusivo(
-                intervalo.minimo,
-                intervalo.maximo,
-            );
+            const numeroFinal = sortearNumeroElegivel(intervalo);
             resultado.textContent = String(numeroFinal);
 
             definirDica(`Resultado: ${numeroFinal}`);
@@ -335,10 +536,7 @@
             if (!intervaloAtual.ok) return;
             resultado.setAttribute("data-antigo", resultado.textContent);
             resultado.textContent = String(
-                inteiroAleatorioInclusivo(
-                    intervaloAtual.minimo,
-                    intervaloAtual.maximo,
-                ),
+                sortearNumeroElegivel(intervaloAtual),
             );
         }, 60);
     }
@@ -350,13 +548,16 @@
             return;
         }
 
+        const validacaoFaixas = validarFaixasExcluidas(intervalo);
+        if (!validacaoFaixas.ok) {
+            definirDica(validacaoFaixas.mensagem, "erro");
+            return;
+        }
+
         definirDica("");
 
         if (mediaMovimentoReduzido?.matches) {
-            const numeroFinal = inteiroAleatorioInclusivo(
-                intervalo.minimo,
-                intervalo.maximo,
-            );
+            const numeroFinal = sortearNumeroElegivel(intervalo);
             resultado.textContent = String(numeroFinal);
 
             definirDica(`Resultado: ${numeroFinal}`);
@@ -392,10 +593,7 @@
                     );
 
                     resultado.textContent = String(
-                        inteiroAleatorioInclusivo(
-                            intervaloAtual.minimo,
-                            intervaloAtual.maximo,
-                        ),
+                        sortearNumeroElegivel(intervaloAtual),
                     );
                 }
                 proximaAtualizacaoEm = agora + intervaloMs;
@@ -433,10 +631,7 @@
 
         resultado.classList.remove("numero-final-animado");
         void resultado.offsetWidth;
-        const numeroFinal = inteiroAleatorioInclusivo(
-            intervalo.minimo,
-            intervalo.maximo,
-        );
+        const numeroFinal = sortearNumeroElegivel(intervalo);
 
         resultado.textContent = numeroFinal;
         resultado.classList.add("numero-final-animado");
@@ -613,6 +808,40 @@
     inputMaximo.addEventListener("input", () => {
         inputMaximo.value = inputMaximo.value.replace(/[^\d-]/g, "");
     });
+
+    if (botaoAbrirConfiguracao) {
+        botaoAbrirConfiguracao.addEventListener("click", (evento) => {
+            evento.preventDefault();
+
+            if (estaRodando) {
+                definirDica("Finalize o sorteio antes de alterar as exclusões.", "erro");
+                return;
+            }
+
+            const intervalo = lerIntervalo();
+            if (!intervalo.ok) {
+                definirDica(intervalo.mensagem, "erro");
+                return;
+            }
+
+            try {
+                configuracaoSorteio = {
+                    minimo: intervalo.minimo,
+                    maximo: intervalo.maximo,
+                    faixasExcluidas,
+                };
+
+                sessionStorage.setItem(
+                    CHAVE_CONFIGURACAO,
+                    JSON.stringify(configuracaoSorteio),
+                );
+
+                window.location.href = "./configuracao.html";
+            } catch {
+                definirDica("Não foi possível guardar a configuração temporária neste navegador.", "erro");
+            }
+        });
+    }
 
     window.addEventListener("keydown", (evento) => {
         if (evento.key === "Enter" && !evento.repeat) {
