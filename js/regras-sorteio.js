@@ -48,15 +48,10 @@ export function normalizarFaixasExcluidas(faixas, intervalo = null) {
 
     for (const faixa of faixasOrdenadas) {
         const ultimaFaixa = faixasNormalizadas[faixasNormalizadas.length - 1];
-        const faixasConsecutivas =
-            ultimaFaixa &&
-            ultimaFaixa.ate < Number.MAX_SAFE_INTEGER &&
-            faixa.de === ultimaFaixa.ate + 1;
 
-        if (
-            ultimaFaixa &&
-            (faixa.de <= ultimaFaixa.ate || faixasConsecutivas)
-        ) {
+        // Une somente sobreposições. Itens consecutivos permanecem separados
+        // para preservar a remoção individual dos números isolados.
+        if (ultimaFaixa && faixa.de <= ultimaFaixa.ate) {
             ultimaFaixa.ate = Math.max(ultimaFaixa.ate, faixa.ate);
         } else {
             faixasNormalizadas.push({ ...faixa });
