@@ -1024,6 +1024,33 @@ body.pagina-configuracao {
     border-color: var(--cor-primario);
 }
 
+.faixa-exclusao__campos textarea {
+    display: block;
+    width: 100%;
+    min-height: 96px;
+    padding: 12px;
+    border: 1px solid rgb(70, 69, 69);
+    border-radius: 14px;
+    background: rgb(32, 32, 32);
+    color: #fff;
+    font: inherit;
+    line-height: 1.5;
+    resize: vertical;
+    transition: border-color 180ms ease;
+}
+
+.faixa-exclusao__campos textarea:focus {
+    border-color: var(--cor-primario);
+    outline: none;
+}
+
+.configuracao__ajuda {
+    margin: 8px 0 0;
+    color: var(--cor-texto-secundario, #a7a7a7);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
 .configuracao__adicionar {
     display: flex;
     justify-content: flex-end;

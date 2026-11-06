@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
     analisarInteiroSeguro,
+    analisarListaNumerosIsolados,
     calcularIntervalosElegiveis,
     inteiroAleatorioInclusivo,
     normalizarFaixasExcluidas,
@@ -24,7 +25,31 @@ test("analisarInteiroSeguro rejeita valores vazios, decimais e fora do limite se
     assert.equal(analisarInteiroSeguro("9007199254740992"), null);
 });
 
-test("normalizarFaixasExcluidas ordena e une faixas sobrepostas ou consecutivas", () => {
+test("analisarListaNumerosIsolados interpreta números separados por vírgulas", () => {
+    assert.deepEqual(
+        analisarListaNumerosIsolados("122, 124, 126, 128, 132, 134, 136, 138, 140"),
+        [122, 124, 126, 128, 132, 134, 136, 138, 140],
+    );
+});
+
+test("analisarListaNumerosIsolados aceita ponto e vírgula, espaços e quebras de linha", () => {
+    assert.deepEqual(
+        analisarListaNumerosIsolados("10; 20  30\n40"),
+        [10, 20, 30, 40],
+    );
+});
+
+test("analisarListaNumerosIsolados rejeita lista vazia, valores inválidos e duplicatas", () => {
+    assert.throws(() => analisarListaNumerosIsolados("  "), /ao menos um número/i);
+    assert.throws(() => analisarListaNumerosIsolados("10, abc, 20"), /abc.*inteiro válido/i);
+    assert.throws(() => analisarListaNumerosIsolados("10, 20, 10"), /números repetidos/i);
+    assert.throws(
+        () => analisarListaNumerosIsolados("9007199254740992"),
+        /inteiro válido/i,
+    );
+});
+
+test("normalizarFaixasExcluidas ordena e une apenas faixas sobrepostas", () => {
     const faixas = [
         { de: 8, ate: 10 },
         { de: 20, ate: 21 },
@@ -34,10 +59,36 @@ test("normalizarFaixasExcluidas ordena e une faixas sobrepostas ou consecutivas"
     ];
 
     assert.deepEqual(normalizarFaixasExcluidas(faixas), [
-        { de: 1, ate: 4 },
+        { de: 1, ate: 2 },
+        { de: 3, ate: 4 },
         { de: 8, ate: 12 },
         { de: 20, ate: 21 },
     ]);
+});
+
+test("normalizarFaixasExcluidas preserva números isolados e os ordena", () => {
+    assert.deepEqual(
+        normalizarFaixasExcluidas([
+            { de: 156, ate: 156 },
+            { de: 123, ate: 123 },
+            { de: 130, ate: 130 },
+        ]),
+        [
+            { de: 123, ate: 123 },
+            { de: 130, ate: 130 },
+            { de: 156, ate: 156 },
+        ],
+    );
+});
+
+test("normalizarFaixasExcluidas une número isolado que já esteja dentro de uma faixa", () => {
+    assert.deepEqual(
+        normalizarFaixasExcluidas([
+            { de: 123, ate: 123 },
+            { de: 120, ate: 125 },
+        ]),
+        [{ de: 120, ate: 125 }],
+    );
 });
 
 test("normalizarFaixasExcluidas rejeita faixas inválidas", () => {
@@ -86,6 +137,44 @@ test("calcularIntervalosElegiveis divide corretamente o intervalo pelas exclusõ
     );
 });
 
+test("calcularIntervalosElegiveis exclui faixas e números isolados", () => {
+    assert.deepEqual(
+        calcularIntervalosElegiveis(
+            [
+                { de: 12, ate: 15 },
+                { de: 123, ate: 123 },
+                { de: 156, ate: 156 },
+                { de: 130, ate: 130 },
+            ],
+            { minimo: 1, maximo: 200 },
+        ),
+        [
+            { de: 1, ate: 11 },
+            { de: 16, ate: 122 },
+            { de: 124, ate: 129 },
+            { de: 131, ate: 155 },
+            { de: 157, ate: 200 },
+        ],
+    );
+});
+
+test("calcularIntervalosElegiveis não duplica exclusões sobrepostas", () => {
+    assert.deepEqual(
+        calcularIntervalosElegiveis(
+            [
+                { de: 10, ate: 15 },
+                { de: 12, ate: 12 },
+                { de: 13, ate: 13 },
+            ],
+            { minimo: 1, maximo: 20 },
+        ),
+        [
+            { de: 1, ate: 9 },
+            { de: 16, ate: 20 },
+        ],
+    );
+});
+
 test("calcularIntervalosElegiveis retorna lista vazia quando tudo foi excluído", () => {
     assert.deepEqual(
         calcularIntervalosElegiveis(
@@ -123,6 +212,23 @@ test("sortearNumeroElegivel nunca retorna número excluído", () => {
     for (let tentativa = 0; tentativa < 100; tentativa += 1) {
         const numero = sortearNumeroElegivel(faixasExcluidas, intervalo);
         assert.ok(numero === 1 || numero === 10);
+    }
+});
+
+test("sortearNumeroElegivel nunca retorna números isolados excluídos", () => {
+    const exclusoes = [
+        { de: 123, ate: 123 },
+        { de: 130, ate: 130 },
+        { de: 156, ate: 156 },
+    ];
+
+    for (let tentativa = 0; tentativa < 300; tentativa += 1) {
+        const numero = sortearNumeroElegivel(exclusoes, {
+            minimo: 120,
+            maximo: 160,
+        });
+
+        assert.ok(![123, 130, 156].includes(numero));
     }
 });
 

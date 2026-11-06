@@ -16,6 +16,35 @@ export function analisarInteiroSeguro(valor) {
     return Number.isSafeInteger(numero) ? numero : null;
 }
 
+/**
+ * Converte uma lista textual em números inteiros seguros.
+ * Aceita vírgulas, ponto e vírgula, espaços e quebras de linha.
+ */
+export function analisarListaNumerosIsolados(valor) {
+    const texto = String(valor).trim();
+
+    if (texto === "") {
+        throw new Error("Informe ao menos um número.");
+    }
+
+    const partes = texto.split(/[,;\s]+/).filter(Boolean);
+    const numeros = partes.map((parte) => {
+        const numero = analisarInteiroSeguro(parte);
+
+        if (numero === null) {
+            throw new Error('O valor "' + parte + '" não é um número inteiro válido.');
+        }
+
+        return numero;
+    });
+
+    if (new Set(numeros).size !== numeros.length) {
+        throw new Error("A lista contém números repetidos. Remova as duplicatas antes de continuar.");
+    }
+
+    return numeros;
+}
+
 export function normalizarFaixasExcluidas(faixas, intervalo = null) {
     if (!Array.isArray(faixas)) {
         throw new Error("A configuração das faixas excluídas está inválida.");
@@ -48,15 +77,10 @@ export function normalizarFaixasExcluidas(faixas, intervalo = null) {
 
     for (const faixa of faixasOrdenadas) {
         const ultimaFaixa = faixasNormalizadas[faixasNormalizadas.length - 1];
-        const faixasConsecutivas =
-            ultimaFaixa &&
-            ultimaFaixa.ate < Number.MAX_SAFE_INTEGER &&
-            faixa.de === ultimaFaixa.ate + 1;
 
-        if (
-            ultimaFaixa &&
-            (faixa.de <= ultimaFaixa.ate || faixasConsecutivas)
-        ) {
+        // Une somente sobreposições. Itens consecutivos permanecem separados
+        // para preservar a remoção individual dos números isolados.
+        if (ultimaFaixa && faixa.de <= ultimaFaixa.ate) {
             ultimaFaixa.ate = Math.max(ultimaFaixa.ate, faixa.ate);
         } else {
             faixasNormalizadas.push({ ...faixa });

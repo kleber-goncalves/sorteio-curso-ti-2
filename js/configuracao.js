@@ -4,6 +4,7 @@ import {
 } from "./armazenamento-configuracao.js";
 import {
     analisarInteiroSeguro,
+    analisarListaNumerosIsolados,
     normalizarFaixasExcluidas,
 } from "./regras-sorteio.js";
 
@@ -11,6 +12,12 @@ import {
     const campoInicioFaixa = document.getElementById("inicioFaixa");
     const campoFimFaixa = document.getElementById("fimFaixa");
     const botaoAdicionarFaixa = document.getElementById("adicionarFaixa");
+    const campoNumeroIsolado = document.getElementById("numeroIsolado");
+    const botaoAdicionarNumero = document.getElementById("adicionarNumero");
+    const camposNumeroIsolado = document.getElementById("camposNumeroIsolado");
+    const campoListaNumerosIsolados = document.getElementById("listaNumerosIsolados");
+    const botaoAdicionarNumerosEmLote = document.getElementById("adicionarNumerosEmLote");
+    const camposNumerosEmLote = document.getElementById("camposNumerosEmLote");
     const botaoAplicarConfiguracao = document.getElementById("aplicarConfiguracao");
     const camposConfiguracao = document.getElementById("camposConfiguracao");
     const listaFaixasExcluidas = document.getElementById("listaFaixasExcluidas");
@@ -19,7 +26,7 @@ import {
     const intervaloConfigurado = document.getElementById("intervaloConfigurado");
     const quantidadeExcluida = document.getElementById("quantidadeExcluida");
     const quantidadeElegivel = document.getElementById("quantidadeElegivel");
-    const totalFaixas = document.getElementById("totalFaixas");
+    const totalExclusoes = document.getElementById("totalExclusoes");
 
     function exibirDica(mensagem, tipo = "") {
         dicaConfiguracao.textContent = mensagem;
@@ -110,8 +117,10 @@ import {
 
             const textoFaixa = document.createElement("span");
             textoFaixa.textContent = faixaValida
-                ? "De " + faixa.de + " até " + faixa.ate
-                : "Faixa inválida";
+                ? faixa.de === faixa.ate
+                    ? "Número " + faixa.de
+                    : "De " + faixa.de + " até " + faixa.ate
+                : "Exclusão inválida";
 
             const botaoRemover = document.createElement("button");
             botaoRemover.className = "botao-remover-faixa";
@@ -120,8 +129,10 @@ import {
             botaoRemover.setAttribute(
                 "aria-label",
                 faixaValida
-                    ? "Remover faixa de " + faixa.de + " até " + faixa.ate
-                    : "Remover faixa inválida",
+                    ? faixa.de === faixa.ate
+                        ? "Remover número " + faixa.de
+                        : "Remover faixa de " + faixa.de + " até " + faixa.ate
+                    : "Remover exclusão inválida",
             );
 
             const iconeRemover = document.createElement("i");
@@ -135,9 +146,9 @@ import {
         });
 
         listaVazia.hidden = faixasExcluidas.length > 0;
-        totalFaixas.textContent =
+        totalExclusoes.textContent =
             faixasExcluidas.length +
-            (faixasExcluidas.length === 1 ? " faixa" : " faixas");
+            (faixasExcluidas.length === 1 ? " item" : " itens");
 
         calcularResumo();
     }
@@ -187,6 +198,140 @@ import {
         renderizarFaixasExcluidas();
     }
 
+    function adicionarNumeroIsolado() {
+        const numero = analisarInteiroSeguro(campoNumeroIsolado.value);
+
+        if (numero === null) {
+            exibirDica("Informe um número inteiro válido.", "erro");
+            return;
+        }
+
+        if (
+            numero < configuracaoSorteio.minimo ||
+            numero > configuracaoSorteio.maximo
+        ) {
+            exibirDica(
+                "O número precisa estar dentro do intervalo definido na página principal.",
+                "erro",
+            );
+            return;
+        }
+
+        if (!verificarFaixasNoIntervalo(faixasExcluidas)) {
+            exibirDica(
+                "Revise as exclusões existentes antes de adicionar outro número.",
+                "erro",
+            );
+            return;
+        }
+
+        const numeroJaExcluido = faixasExcluidas.some(
+            (faixa) => numero >= faixa.de && numero <= faixa.ate,
+        );
+
+        if (numeroJaExcluido) {
+            exibirDica(
+                "Esse número já está excluído, individualmente ou dentro de uma faixa.",
+                "erro",
+            );
+            return;
+        }
+
+        faixasExcluidas = normalizarFaixasExcluidas(
+            [...faixasExcluidas, { de: numero, ate: numero }],
+            configuracaoSorteio,
+        );
+
+        salvarConfiguracaoAtual();
+        campoNumeroIsolado.value = "";
+        exibirDica("Número " + numero + " adicionado às exclusões.", "sucesso");
+        renderizarFaixasExcluidas();
+    }
+
+    function adicionarNumerosEmLote() {
+        let numeros;
+
+        try {
+            numeros = analisarListaNumerosIsolados(campoListaNumerosIsolados.value);
+        } catch (erro) {
+            exibirDica(erro.message, "erro");
+            return;
+        }
+
+        if (!verificarFaixasNoIntervalo(faixasExcluidas)) {
+            exibirDica(
+                "Revise as exclusões existentes antes de adicionar outros números.",
+                "erro",
+            );
+            return;
+        }
+
+        const numerosJaExcluidos = numeros.filter((numero) =>
+            faixasExcluidas.some(
+                (faixa) => numero >= faixa.de && numero <= faixa.ate,
+            ),
+        );
+
+        if (numerosJaExcluidos.length > 0) {
+            exibirDica(
+                "Estes números já estão excluídos: " + numerosJaExcluidos.join(", ") + ". Nenhum número da lista foi adicionado.",
+                "erro",
+            );
+            return;
+        }
+
+        const numerosForaDoIntervalo = numeros.filter(
+            (numero) =>
+                numero < configuracaoSorteio.minimo ||
+                numero > configuracaoSorteio.maximo,
+        );
+
+        if (numerosForaDoIntervalo.length > 0) {
+            exibirDica(
+                "Estes números estão fora do intervalo do sorteio: " +
+                    numerosForaDoIntervalo.join(", ") +
+                    ". Nenhum número da lista foi adicionado.",
+                "erro",
+            );
+            return;
+        }
+
+        const novasFaixas = numeros.map((numero) => ({
+            de: numero,
+            ate: numero,
+        }));
+        const faixasAtualizadas = normalizarFaixasExcluidas(
+            [...faixasExcluidas, ...novasFaixas],
+            configuracaoSorteio,
+        );
+        const totalExcluido = faixasAtualizadas.reduce(
+            (total, faixa) => total + faixa.ate - faixa.de + 1,
+            0,
+        );
+        const totalIntervalo =
+            configuracaoSorteio.maximo - configuracaoSorteio.minimo + 1;
+
+        if (totalIntervalo - totalExcluido < 1) {
+            exibirDica(
+                "A lista excluiria todas as opções. Mantenha pelo menos um número elegível. Nenhum número foi adicionado.",
+                "erro",
+            );
+            return;
+        }
+
+        faixasExcluidas = faixasAtualizadas;
+        salvarConfiguracaoAtual();
+        campoListaNumerosIsolados.value = "";
+        exibirDica(
+            numeros.length +
+                (numeros.length === 1
+                    ? " número adicionado às exclusões."
+                    : " números adicionados às exclusões."),
+            "sucesso",
+        );
+        renderizarFaixasExcluidas();
+    }
+
     function removerFaixaExcluida(indice) {
         faixasExcluidas = faixasExcluidas.filter(
             (_, posicao) => posicao !== indice,
@@ -202,6 +347,8 @@ import {
 
     if (!configuracaoSorteio) {
         camposConfiguracao.disabled = true;
+        camposNumeroIsolado.disabled = true;
+        camposNumerosEmLote.disabled = true;
         botaoAplicarConfiguracao.disabled = true;
         intervaloConfigurado.textContent = "Não definido";
         exibirDica(
@@ -213,6 +360,22 @@ import {
     }
 
     botaoAdicionarFaixa.addEventListener("click", adicionarFaixaExcluida);
+    botaoAdicionarNumero.addEventListener("click", adicionarNumeroIsolado);
+    botaoAdicionarNumerosEmLote.addEventListener("click", adicionarNumerosEmLote);
+
+    campoListaNumerosIsolados.addEventListener("keydown", (evento) => {
+        if (evento.key !== "Enter" || !evento.ctrlKey) return;
+
+        evento.preventDefault();
+        adicionarNumerosEmLote();
+    });
+
+    campoNumeroIsolado.addEventListener("keydown", (evento) => {
+        if (evento.key !== "Enter") return;
+
+        evento.preventDefault();
+        adicionarNumeroIsolado();
+    });
 
     listaFaixasExcluidas.addEventListener("click", (evento) => {
         const botaoRemover = evento.target.closest("[data-indice]");
