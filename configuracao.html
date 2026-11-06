@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
             name="description"
-            content="Configure as faixas de números que não participarão do sorteio."
+            content="Configure faixas e números específicos que não participarão do sorteio."
         />
         <link rel="icon" type="image/png" href="favicon-32x32.png" />
         <link rel="stylesheet" href="style.css" />
@@ -37,8 +37,8 @@
                 <div class="configuracao__introducao">
                     <p class="configuracao__rotulo">CONFIGURAÇÃO DO SORTEIO</p>
                     <p class="configuracao__descricao">
-                        Adicione faixas de números que não participarão deste sorteio.
-                        Você pode incluir quantas faixas forem necessárias.
+                        Adicione faixas ou números específicos que não participarão deste sorteio.
+                        Todas as exclusões precisam estar dentro do intervalo configurado.
                     </p>
                 </div>
 
@@ -99,14 +99,46 @@
                     </div>
                 </fieldset>
 
+                <fieldset
+                    class="configuracao__campos"
+                    id="camposNumeroIsolado"
+                >
+                    <legend>Adicionar número isolado</legend>
+
+                    <div class="intervalo faixa-exclusao__campos">
+                        <div>
+                            <label for="numeroIsolado">Número</label>
+                            <input
+                                type="text"
+                                inputmode="decimal"
+                                name="numeroIsolado"
+                                id="numeroIsolado"
+                                autocomplete="off"
+                                placeholder="Ex.: 123"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="configuracao__adicionar">
+                        <button
+                            class="button-bg-base"
+                            id="adicionarNumero"
+                            type="button"
+                        >
+                            <i class="icon-plus"></i>
+                            Adicionar número
+                        </button>
+                    </div>
+                </fieldset>
+
                 <div class="lista-faixas">
                     <div class="lista-faixas__cabecalho">
-                        <p>FAIXAS EXCLUÍDAS</p>
-                        <span id="totalFaixas">0 faixas</span>
+                        <p>EXCLUSÕES CADASTRADAS</p>
+                        <span id="totalExclusoes">0 itens</span>
                     </div>
                     <ul class="lista-faixas-excluidas" id="listaFaixasExcluidas"></ul>
                     <p class="lista-faixas__vazia" id="listaVazia">
-                        Nenhuma faixa adicionada.
+                        Nenhuma exclusão adicionada.
                     </p>
                 </div>
 

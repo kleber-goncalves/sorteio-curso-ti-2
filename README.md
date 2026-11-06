@@ -20,7 +20,7 @@ Sorteio II é uma página interativa para sortear números em dois modos: **auto
   - **Automático**: rolagem automática até o número final.
   - **Manual**: inicia o sorteio e permite parar quando quiser.
 - **Intervalo customizável**: informe `mínimo` e `máximo` para o sorteio.
-- **Faixas de exclusão**: configure várias faixas de números que não participarão do sorteio. As configurações ficam temporariamente no navegador durante a sessão.
+- **Exclusões personalizadas**: configure faixas de números (por exemplo, de 12 até 15) e números isolados (por exemplo, 123, 130 e 156) que não participarão do sorteio. As configurações ficam temporariamente no navegador durante a sessão.
 - **Histórico de resultados**: os últimos números sorteados são exibidos.
 - **Modal do criador**: informações do autor e links para redes sociais.
 - **Responsividade**: layout adaptado para diferentes tamanhos de tela.
@@ -49,7 +49,7 @@ Sorteio II é uma página interativa para sortear números em dois modos: **auto
 
 3. Acesse `http://localhost:5500` no navegador.
 
-4. Informe o intervalo mínimo e máximo. Use **Configurar exclusões** para adicionar faixas com os campos **De** e **Até** e, depois, aplique a configuração para voltar ao sorteio.
+4. Informe o intervalo mínimo e máximo. Use **Configurar exclusões** para adicionar faixas com os campos **De** e **Até**, ou cadastrar números isolados. Depois, aplique a configuração para voltar ao sorteio.
 
 > As páginas utilizam módulos JavaScript nativos (`import`/`export`). Por isso, execute o projeto por um servidor HTTP local; abrir o arquivo diretamente pelo endereço `file://` pode bloquear o carregamento dos módulos.
 
@@ -63,7 +63,7 @@ O projeto utiliza o executor de testes nativo do Node.js, sem bibliotecas adicio
     npm test
     ```
 
-Os testes cobrem as regras de números elegíveis, normalização das faixas, geração de números e armazenamento temporário.
+Os testes cobrem as regras de números elegíveis, normalização de faixas e números isolados, geração de números e armazenamento temporário.
 
 ## 📁 Estrutura do projeto
 

@@ -44,6 +44,21 @@ test("salvarConfiguracaoTemporaria grava dados que podem ser recuperados", () =>
     assert.deepEqual(carregarConfiguracaoTemporaria(), configuracao);
 });
 
+test("salvarConfiguracaoTemporaria mantém números isolados no formato compatível", () => {
+    const configuracao = {
+        minimo: 1,
+        maximo: 200,
+        faixasExcluidas: [
+            { de: 12, ate: 15 },
+            { de: 123, ate: 123 },
+            { de: 156, ate: 156 },
+        ],
+    };
+
+    salvarConfiguracaoTemporaria(configuracao);
+    assert.deepEqual(carregarConfiguracaoTemporaria(), configuracao);
+});
+
 test("carregarConfiguracaoTemporaria ignora JSON malformado", () => {
     dadosArmazenados.set("configuracaoSorteio", "{json inválido");
     assert.equal(carregarConfiguracaoTemporaria(), null);
