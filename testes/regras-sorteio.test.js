@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
     analisarInteiroSeguro,
+    analisarListaNumerosIsolados,
     calcularIntervalosElegiveis,
     inteiroAleatorioInclusivo,
     normalizarFaixasExcluidas,
@@ -22,6 +23,30 @@ test("analisarInteiroSeguro rejeita valores vazios, decimais e fora do limite se
     assert.equal(analisarInteiroSeguro("2.5"), null);
     assert.equal(analisarInteiroSeguro("abc"), null);
     assert.equal(analisarInteiroSeguro("9007199254740992"), null);
+});
+
+test("analisarListaNumerosIsolados interpreta números separados por vírgulas", () => {
+    assert.deepEqual(
+        analisarListaNumerosIsolados("122, 124, 126, 128, 132, 134, 136, 138, 140"),
+        [122, 124, 126, 128, 132, 134, 136, 138, 140],
+    );
+});
+
+test("analisarListaNumerosIsolados aceita ponto e vírgula, espaços e quebras de linha", () => {
+    assert.deepEqual(
+        analisarListaNumerosIsolados("10; 20  30\n40"),
+        [10, 20, 30, 40],
+    );
+});
+
+test("analisarListaNumerosIsolados rejeita lista vazia, valores inválidos e duplicatas", () => {
+    assert.throws(() => analisarListaNumerosIsolados("  "), /ao menos um número/i);
+    assert.throws(() => analisarListaNumerosIsolados("10, abc, 20"), /abc.*inteiro válido/i);
+    assert.throws(() => analisarListaNumerosIsolados("10, 20, 10"), /números repetidos/i);
+    assert.throws(
+        () => analisarListaNumerosIsolados("9007199254740992"),
+        /inteiro válido/i,
+    );
 });
 
 test("normalizarFaixasExcluidas ordena e une apenas faixas sobrepostas", () => {

@@ -4,6 +4,7 @@ import {
 } from "./armazenamento-configuracao.js";
 import {
     analisarInteiroSeguro,
+    analisarListaNumerosIsolados,
     normalizarFaixasExcluidas,
 } from "./regras-sorteio.js";
 
@@ -14,6 +15,9 @@ import {
     const campoNumeroIsolado = document.getElementById("numeroIsolado");
     const botaoAdicionarNumero = document.getElementById("adicionarNumero");
     const camposNumeroIsolado = document.getElementById("camposNumeroIsolado");
+    const campoListaNumerosIsolados = document.getElementById("listaNumerosIsolados");
+    const botaoAdicionarNumerosEmLote = document.getElementById("adicionarNumerosEmLote");
+    const camposNumerosEmLote = document.getElementById("camposNumerosEmLote");
     const botaoAplicarConfiguracao = document.getElementById("aplicarConfiguracao");
     const camposConfiguracao = document.getElementById("camposConfiguracao");
     const listaFaixasExcluidas = document.getElementById("listaFaixasExcluidas");
@@ -244,6 +248,90 @@ import {
         renderizarFaixasExcluidas();
     }
 
+    function adicionarNumerosEmLote() {
+        let numeros;
+
+        try {
+            numeros = analisarListaNumerosIsolados(campoListaNumerosIsolados.value);
+        } catch (erro) {
+            exibirDica(erro.message, "erro");
+            return;
+        }
+
+        if (!verificarFaixasNoIntervalo(faixasExcluidas)) {
+            exibirDica(
+                "Revise as exclusões existentes antes de adicionar outros números.",
+                "erro",
+            );
+            return;
+        }
+
+        const numerosJaExcluidos = numeros.filter((numero) =>
+            faixasExcluidas.some(
+                (faixa) => numero >= faixa.de && numero <= faixa.ate,
+            ),
+        );
+
+        if (numerosJaExcluidos.length > 0) {
+            exibirDica(
+                "Estes números já estão excluídos: " + numerosJaExcluidos.join(", ") + ". Nenhum número da lista foi adicionado.",
+                "erro",
+            );
+            return;
+        }
+
+        const numerosForaDoIntervalo = numeros.filter(
+            (numero) =>
+                numero < configuracaoSorteio.minimo ||
+                numero > configuracaoSorteio.maximo,
+        );
+
+        if (numerosForaDoIntervalo.length > 0) {
+            exibirDica(
+                "Estes números estão fora do intervalo do sorteio: " +
+                    numerosForaDoIntervalo.join(", ") +
+                    ". Nenhum número da lista foi adicionado.",
+                "erro",
+            );
+            return;
+        }
+
+        const novasFaixas = numeros.map((numero) => ({
+            de: numero,
+            ate: numero,
+        }));
+        const faixasAtualizadas = normalizarFaixasExcluidas(
+            [...faixasExcluidas, ...novasFaixas],
+            configuracaoSorteio,
+        );
+        const totalExcluido = faixasAtualizadas.reduce(
+            (total, faixa) => total + faixa.ate - faixa.de + 1,
+            0,
+        );
+        const totalIntervalo =
+            configuracaoSorteio.maximo - configuracaoSorteio.minimo + 1;
+
+        if (totalIntervalo - totalExcluido < 1) {
+            exibirDica(
+                "A lista excluiria todas as opções. Mantenha pelo menos um número elegível. Nenhum número foi adicionado.",
+                "erro",
+            );
+            return;
+        }
+
+        faixasExcluidas = faixasAtualizadas;
+        salvarConfiguracaoAtual();
+        campoListaNumerosIsolados.value = "";
+        exibirDica(
+            numeros.length +
+                (numeros.length === 1
+                    ? " número adicionado às exclusões."
+                    : " números adicionados às exclusões."),
+            "sucesso",
+        );
+        renderizarFaixasExcluidas();
+    }
+
     function removerFaixaExcluida(indice) {
         faixasExcluidas = faixasExcluidas.filter(
             (_, posicao) => posicao !== indice,
@@ -260,6 +348,7 @@ import {
     if (!configuracaoSorteio) {
         camposConfiguracao.disabled = true;
         camposNumeroIsolado.disabled = true;
+        camposNumerosEmLote.disabled = true;
         botaoAplicarConfiguracao.disabled = true;
         intervaloConfigurado.textContent = "Não definido";
         exibirDica(
@@ -272,6 +361,14 @@ import {
 
     botaoAdicionarFaixa.addEventListener("click", adicionarFaixaExcluida);
     botaoAdicionarNumero.addEventListener("click", adicionarNumeroIsolado);
+    botaoAdicionarNumerosEmLote.addEventListener("click", adicionarNumerosEmLote);
+
+    campoListaNumerosIsolados.addEventListener("keydown", (evento) => {
+        if (evento.key !== "Enter" || !evento.ctrlKey) return;
+
+        evento.preventDefault();
+        adicionarNumerosEmLote();
+    });
 
     campoNumeroIsolado.addEventListener("keydown", (evento) => {
         if (evento.key !== "Enter") return;

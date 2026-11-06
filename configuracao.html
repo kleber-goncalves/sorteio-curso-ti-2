@@ -131,6 +131,40 @@
                     </div>
                 </fieldset>
 
+                <fieldset
+                    class="configuracao__campos"
+                    id="camposNumerosEmLote"
+                >
+                    <legend>Adicionar vários números isolados</legend>
+
+                    <div class="faixa-exclusao__campos">
+                        <label style="color: #8f939c" for="listaNumerosIsolados">Lista de números</label>
+                        <textarea
+                            id="listaNumerosIsolados"
+                            name="listaNumerosIsolados"
+                            rows="3"
+                            autocomplete="off"
+                            spellcheck="false"
+                            placeholder="Ex.: 122, 124, 126, 128, 132, 134, 136, 138, 140"
+                            aria-describedby="ajudaNumerosEmLote"
+                        ></textarea>
+                        <p class="configuracao__ajuda" id="ajudaNumerosEmLote">
+                            Separe os números por vírgula, ponto e vírgula ou espaço. Cada número será cadastrado individualmente.
+                        </p>
+                    </div>
+
+                    <div class="configuracao__adicionar">
+                        <button
+                            class="button-bg-base"
+                            id="adicionarNumerosEmLote"
+                            type="button"
+                        >
+                            <i class="icon-list-plus"></i>
+                            Adicionar números
+                        </button>
+                    </div>
+                </fieldset>
+
                 <div class="lista-faixas">
                     <div class="lista-faixas__cabecalho">
                         <p>EXCLUSÕES CADASTRADAS</p>
