@@ -34,7 +34,7 @@ test("analisarListaNumerosIsolados interpreta números separados por vírgulas",
 
 test("analisarListaNumerosIsolados aceita ponto e vírgula, espaços e quebras de linha", () => {
     assert.deepEqual(
-        analisarListaNumerosIsolados("10; 20  30\\n40"),
+        analisarListaNumerosIsolados("10; 20  30\n40"),
         [10, 20, 30, 40],
     );
 });

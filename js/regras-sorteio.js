@@ -27,7 +27,7 @@ export function analisarListaNumerosIsolados(valor) {
         throw new Error("Informe ao menos um número.");
     }
 
-    const partes = texto.split(/[,;\\s]+/).filter(Boolean);
+    const partes = texto.split(/[,;\s]+/).filter(Boolean);
     const numeros = partes.map((parte) => {
         const numero = analisarInteiroSeguro(parte);
 
